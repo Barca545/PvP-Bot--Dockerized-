@@ -1,4 +1,3 @@
-import random
 from Bot_initiate import *
 from Matchmaking import *
 #Supp_Champs = ['Alistar', 'Amumu','Ashe', 'Blitzcrank','Braum','Heimerdinger','Janna','Leona','Lulu','Lux','Morgana','Nami','Nautilus','Pyke','Rakan','Renata Glasc','Seraphine','Sona','Soraka','Swain','Tham Kench','Taric','Thresh','Zilean','Zyra',]
@@ -79,7 +78,7 @@ async def joinqueue(ctx, role: Option(choices=roles)):
         player = Player.build(user,role,Mids)
         Mid_queue[player.disc_name] = player
         await ctx.respond(player.disc_name + ' has joined the Mid queue')
-    elif role == 'Tops':
+    elif role == 'Top':
         user = str(Tops.find('{}'.format(ctx.author)).value)
         player = Player.build(user,role,Tops)
         Top_queue[player.disc_name] = player
@@ -149,5 +148,5 @@ async def pop_queue():  #currently looping forever make it so the players are re
         users = (players['Blue'],players['Red'])
         await popmsg(users,str(creator_msg) + '\n' + str(name_msg) + '\n' + str(type_msg) + '\n' + str(pwd_msg) +  '\n' + str(bluelaner) + '\n' + str(redlaner) + '\n' + str(diff_msg),DM=True,channel=False,channel_name=False)
     if len(ADC_queue) >= 2 and len(Sup_queue) >= 2:
-       await choose_duo()
+       await choose_duo()   
 bot.run(token)                                                                                                                                           

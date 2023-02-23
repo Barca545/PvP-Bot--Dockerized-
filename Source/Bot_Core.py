@@ -65,74 +65,39 @@ async def setup(ctx, ign, rank: Option(choices=rank_as_mmr),role: Option(choices
 @bot.slash_command()
 async def joinqueue(ctx, role: Option(choices=roles)):
     if role == 'ADC':
-        user = str(Botlaners.find('{}'.format(ctx.author)).value)
-        disc_name = Botlaners.find(user)
-        def get_bot_champ(user): 
-            disc_id = Botlaners.row_values(disc_name.row)[disc_name.col+2]
-            champ_pool = Botlaners.row_values(disc_name.row)[disc_name.col+5:]
-            champ_selection = str(random.choice(champ_pool))
-            return (champ_selection, disc_id)
-        disc_id = int(get_bot_champ(user)[1])
-        champ_selection = str(get_bot_champ(user)[0])
-        player = Player(disc_name = user, ign = Botlaners.row_values(disc_name.row)[disc_name.col+1], disc_id = disc_id, rank = Botlaners.row_values(disc_name.row)[disc_name.col+2], role = role, champ = champ_selection)
+        user = Botlaners.find('{}'.format(ctx.author)).value
+        player = Player.build(user,role,Botlaners)
         ADC_queue[player.disc_name] = player
-        await ctx.respond(user + ' has joined the ADC queue')
+        await ctx.respond(player.disc_name + ' has joined the ADC queue')
     elif role == 'Support':
         user = str(Supports.find('{}'.format(ctx.author)).value)
-        disc_name = Supports.find(user)
-        def get_supp_champ(user): 
-            disc_id = Supports.row_values(disc_name.row)[disc_name.col+2]
-            champ_pool = Supports.row_values(disc_name.row)[disc_name.col+5:]
-            champ_selection = random.choice(champ_pool)
-            return(champ_selection, disc_id) 
-        disc_id = int(get_supp_champ(user)[1])
-        champ_selection = str(get_supp_champ(user)[0])
-        player = Player(disc_name = user, ign = Supports.row_values(disc_name.row)[disc_name.col+1], disc_id = disc_id, rank = Supports.row_values(disc_name.row)[disc_name.col+2],role = role,champ = champ_selection)
+        player = Player.build(user,role,Supports)
         Sup_queue[player.disc_name] = player
-        await ctx.respond(user + ' has joined the Support queue')
+        await ctx.respond(player.disc_name + ' has joined the Support queue')
     elif role == 'Mid':
         user = str(Mids.find('{}'.format(ctx.author)).value)
-        disc_name = Mids.find(user)
-        def get_mid_champ(user): 
-            disc_id = Mids.row_values(disc_name.row)[disc_name.col+2]
-            champ_pool = Mids.row_values(disc_name.row)[disc_name.col+5:]
-            champ_selection = random.choice(champ_pool)
-            return(champ_selection, disc_id) 
-        disc_id = int(get_mid_champ(user)[1])
-        champ_selection = str(get_mid_champ(user)[0])
-        player = Player(disc_name = user, ign = Mids.row_values(disc_name.row)[disc_name.col+1], disc_id = disc_id, rank = Mids.row_values(disc_name.row)[disc_name.col+2],role = role,champ = champ_selection)
+        player = Player.build(user,role,Mids)
         Mid_queue[player.disc_name] = player
-        await ctx.respond(user + ' has joined the Mid queue')
+        await ctx.respond(player.disc_name + ' has joined the Mid queue')
     elif role == 'Tops':
         user = str(Tops.find('{}'.format(ctx.author)).value)
-        disc_name = Tops.find(user)
-        def get_top_champ(user): 
-            disc_id = Tops.row_values(disc_name.row)[disc_name.col+2]
-            champ_pool = Tops.row_values(disc_name.row)[disc_name.col+5:]
-            champ_selection = random.choice(champ_pool)
-            return(champ_selection, disc_id) 
-        disc_id = int(get_top_champ(user)[1])
-        champ_selection = str(get_top_champ(user)[0])
-        player = Player(disc_name = user, ign = Tops.row_values(disc_name.row)[disc_name.col+1], disc_id = disc_id, rank = Tops.row_values(disc_name.row)[disc_name.col+2],role = role,champ = champ_selection)
+        player = Player.build(user,role,Tops)
         Top_queue[player.disc_name] = player
-        await ctx.respond(user + ' has joined the Top queue')
+        await ctx.respond(player.disc_name + ' has joined the Top queue')
 
 @bot.slash_command()
 async def leavequeue(ctx,role: Option(choices=roles)):
-    if role == 'ADC':
-        user = '{}'.format(ctx.author)
+    user = '{}'.format(ctx.author)
+    if role == 'ADC':  
         del ADC_queue[user] 
         await ctx.respond(user + ' has left the ADC queue')
     elif role == 'Support':
-        user = '{}'.format(ctx.author)
         del Sup_queue[user] 
         await ctx.respond(user + ' has left the Support queue')    
     elif role == 'Mid':
-        user = '{}'.format(ctx.author)
         del Mid_queue[user] 
         await ctx.respond(user + ' has left the Mid queue')
     elif role == 'Top':
-        user = '{}'.format(ctx.author)
         del Top_queue[user] 
         await ctx.respond(user + ' has left the Top queue')      
 
@@ -183,7 +148,6 @@ async def pop_queue():  #currently looping forever make it so the players are re
         diff_msg = match[5]
         users = (players['Blue'],players['Red'])
         await popmsg(users,str(creator_msg) + '\n' + str(name_msg) + '\n' + str(type_msg) + '\n' + str(pwd_msg) +  '\n' + str(bluelaner) + '\n' + str(redlaner) + '\n' + str(diff_msg),DM=True,channel=False,channel_name=False)
-#    if len(ADC_queue) >= 2 and len(Sup_queue) >= 2:
-#       await choose_duo()
-
+    if len(ADC_queue) >= 2 and len(Sup_queue) >= 2:
+       await choose_duo()
 bot.run(token)                                                                                                                                           

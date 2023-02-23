@@ -38,7 +38,6 @@ credentials = {
 }
 gc = gspread.service_account_from_dict(credentials)
 
-
 bot_database = gc.open_by_url('https://docs.google.com/spreadsheets/d/134T4caUqFHG3crrS_Rk9Z3ON5o6mc19tPt4kTm4R834')
 Botlaners = bot_database.get_worksheet_by_id(0)
 Supports = bot_database.get_worksheet_by_id(1953196714)

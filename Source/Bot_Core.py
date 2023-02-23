@@ -1,7 +1,6 @@
 import random
 from Bot_initiate import *
 from Matchmaking import *
-
 #Supp_Champs = ['Alistar', 'Amumu','Ashe', 'Blitzcrank','Braum','Heimerdinger','Janna','Leona','Lulu','Lux','Morgana','Nami','Nautilus','Pyke','Rakan','Renata Glasc','Seraphine','Sona','Soraka','Swain','Tham Kench','Taric','Thresh','Zilean','Zyra',]
 #ADC_Champs = ['Aphelios','Ashe','Caitlyn','Draven','Ezreal','Graves','Jhin','Jinx',"Kai'sa",'Kalista','Kindred',"Kog'ma",'Lucian','Miss Fortune','Samira','Senna','Quinn','Sivir','Tristana','Twitch','Varus','Vayne','Xayah','Zeri','Yasuo']
 #full list of support champs #Supp_Champs = ['Alistar', 'Amumu', 'Ashe', 'Bard', 'Blitzcrank', 'Brand','Braum','Heimerdinger','Ivern','Janna','Karma', 'Leona','Lulu','Lux','Malphite','Maokai','Morgana','Nami','Nautilus','Pantheon','Pyke','Rakan','Renata Glasc','Senna','Seraphine','Sona','Soraka','Swain','Tham Kench','Taric','Thresh',"Vel'Koz",'Xerath','Yuumi','Zac','Zilean','Zyra',]
@@ -75,7 +74,7 @@ async def joinqueue(ctx, role: Option(choices=roles)):
             return (champ_selection, disc_id)
         disc_id = int(get_bot_champ(user)[1])
         champ_selection = str(get_bot_champ(user)[0])
-        player = Player(disc_name = user, ign = Botlaners.row_values(disc_name.row)[disc_name.col+1], disc_id = disc_id, rank = Botlaners.row_values(disc_name.row)[disc_name.col+2], champ = champ_selection)
+        player = Player(disc_name = user, ign = Botlaners.row_values(disc_name.row)[disc_name.col+1], disc_id = disc_id, rank = Botlaners.row_values(disc_name.row)[disc_name.col+2], role = role, champ = champ_selection)
         ADC_queue[player.disc_name] = player
         await ctx.respond(user + ' has joined the ADC queue')
     elif role == 'Support':
@@ -88,7 +87,7 @@ async def joinqueue(ctx, role: Option(choices=roles)):
             return(champ_selection, disc_id) 
         disc_id = int(get_supp_champ(user)[1])
         champ_selection = str(get_supp_champ(user)[0])
-        player = Player(disc_name = user, ign = Supports.row_values(disc_name.row)[disc_name.col+1], disc_id = disc_id, rank = Supports.row_values(disc_name.row)[disc_name.col+2],champ = champ_selection)
+        player = Player(disc_name = user, ign = Supports.row_values(disc_name.row)[disc_name.col+1], disc_id = disc_id, rank = Supports.row_values(disc_name.row)[disc_name.col+2],role = role,champ = champ_selection)
         Sup_queue[player.disc_name] = player
         await ctx.respond(user + ' has joined the Support queue')
     elif role == 'Mid':
@@ -101,7 +100,7 @@ async def joinqueue(ctx, role: Option(choices=roles)):
             return(champ_selection, disc_id) 
         disc_id = int(get_mid_champ(user)[1])
         champ_selection = str(get_mid_champ(user)[0])
-        player = Player(disc_name = user, ign = Mids.row_values(disc_name.row)[disc_name.col+1], disc_id = disc_id, rank = Mids.row_values(disc_name.row)[disc_name.col+2],champ = champ_selection)
+        player = Player(disc_name = user, ign = Mids.row_values(disc_name.row)[disc_name.col+1], disc_id = disc_id, rank = Mids.row_values(disc_name.row)[disc_name.col+2],role = role,champ = champ_selection)
         Mid_queue[player.disc_name] = player
         await ctx.respond(user + ' has joined the Mid queue')
     elif role == 'Tops':
@@ -114,7 +113,7 @@ async def joinqueue(ctx, role: Option(choices=roles)):
             return(champ_selection, disc_id) 
         disc_id = int(get_top_champ(user)[1])
         champ_selection = str(get_top_champ(user)[0])
-        player = Player(disc_name = user, ign = Tops.row_values(disc_name.row)[disc_name.col+1], disc_id = disc_id, rank = Tops.row_values(disc_name.row)[disc_name.col+2],champ = champ_selection)
+        player = Player(disc_name = user, ign = Tops.row_values(disc_name.row)[disc_name.col+1], disc_id = disc_id, rank = Tops.row_values(disc_name.row)[disc_name.col+2],role = role,champ = champ_selection)
         Top_queue[player.disc_name] = player
         await ctx.respond(user + ' has joined the Top queue')
 
@@ -186,6 +185,5 @@ async def pop_queue():  #currently looping forever make it so the players are re
         await popmsg(users,str(creator_msg) + '\n' + str(name_msg) + '\n' + str(type_msg) + '\n' + str(pwd_msg) +  '\n' + str(bluelaner) + '\n' + str(redlaner) + '\n' + str(diff_msg),DM=True,channel=False,channel_name=False)
 #    if len(ADC_queue) >= 2 and len(Sup_queue) >= 2:
 #       await choose_duo()
-
 
 bot.run(token)                                                                                                                                           

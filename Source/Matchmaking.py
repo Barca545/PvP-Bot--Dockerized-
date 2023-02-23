@@ -98,7 +98,7 @@ class Match:
                 del queue[second_player.disc_name]
                 return Match.side_selection(first_player,second_player)
             elif delta_mmr(first_player.rank,second_player.rank) > mmr_band:
-                time.sleep(0)                                     
+                time.sleep(30)                                     
     def info(self):
         creator_msg = 'Lobby Creator: ' + self.creator 
         name_msg = 'Lobby Name: ' + self.creator + "'s Lobby"

@@ -31,8 +31,8 @@ rank_as_mmr = {
     'Grandmaster' : 3000,
     'Challenger' : 3500,
     }
-
 roles = ['ADC','Support','Top', 'Mid']
+Queues = build_queues()
 
 #discord set up
 @bot.event
@@ -41,10 +41,11 @@ async def on_ready():
     pop_queue.start()
 
 @bot.slash_command()
-async def set_channel(ctx, channel_id):
-    global channel_name 
-    channel_name = int(channel_id)
-    await ctx.respond('Bot channel is now ' + str(channel_name))
+async def set_channel(ctx):
+    guild = int(ctx.guild_id)
+    channel= int(ctx.channel_id)
+    Guilds.append_row([guild,channel])
+    await ctx.respond('Bot channel is now ' + '#'+str(channel))
 
 #/setup
 @bot.slash_command()
@@ -62,91 +63,100 @@ async def setup(ctx, ign, rank: Option(choices=rank_as_mmr),role: Option(choices
     await ctx.respond(f'Setup complete GLHF {ign}!!!')
 
 @bot.slash_command()
-async def joinqueue(ctx, role: Option(choices=roles)):
+async def joinqueue(ctx, region: Option(choices=['NA', 'EUW']), role: Option(choices=roles)):
     if role == 'ADC':
         user = Botlaners.find('{}'.format(ctx.author)).value
         player = Player.build(user,role,Botlaners)
-        ADC_queue[player.disc_name] = player
+        server = ctx.guild_id
+        Queues[server][region].adc_queue[player.disc_name] = player
         await ctx.respond(player.disc_name + ' has joined the ADC queue')
     elif role == 'Support':
         user = str(Supports.find('{}'.format(ctx.author)).value)
         player = Player.build(user,role,Supports)
-        Sup_queue[player.disc_name] = player
+        Queues[server][region].sup_queue[player.disc_name] = player
         await ctx.respond(player.disc_name + ' has joined the Support queue')
     elif role == 'Mid':
         user = str(Mids.find('{}'.format(ctx.author)).value)
         player = Player.build(user,role,Mids)
-        Mid_queue[player.disc_name] = player
+        Queues[server][region].mid_queue[player.disc_name] = player
         await ctx.respond(player.disc_name + ' has joined the Mid queue')
     elif role == 'Top':
         user = str(Tops.find('{}'.format(ctx.author)).value)
         player = Player.build(user,role,Tops)
-        Top_queue[player.disc_name] = player
+        Queues[server][region].top_queue[player.disc_name] = player
         await ctx.respond(player.disc_name + ' has joined the Top queue')
 
 @bot.slash_command()
-async def leavequeue(ctx,role: Option(choices=roles)):
+async def leavequeue(ctx, region: Option(choices=['NA', 'EUW']),role: Option(choices=roles)):
     user = '{}'.format(ctx.author)
+    server = ctx.guild_id
     if role == 'ADC':  
-        del ADC_queue[user] 
+        del Queues[server][region].adc_queue[user]
         await ctx.respond(user + ' has left the ADC queue')
     elif role == 'Support':
-        del Sup_queue[user] 
+        del Queues[server][region].sup_queue[user]
         await ctx.respond(user + ' has left the Support queue')    
     elif role == 'Mid':
-        del Mid_queue[user] 
+        del Queues[server][region].mid_queue[user] 
         await ctx.respond(user + ' has left the Mid queue')
     elif role == 'Top':
-        del Top_queue[user] 
+        del Queues[server][region].top_queue[user]
         await ctx.respond(user + ' has left the Top queue')      
 
 #/showqueues
 @bot.slash_command()
-async def show2v2queue(ctx): 
+async def show2v2queue(ctx,region: Option(choices=['NA', 'EUW'])): 
+    server = ctx.guild_id
     await ctx.respond(
-        str(len(ADC_queue)) + ' in the ADC queue' 
+        str(len(Queues[server][region].adc_queue)) + ' in the ADC queue' 
         + '\n'  +
-        str(len(Sup_queue)) + ' in the Support queue')
+        str(len(Queues[server][region].sup_queue)) + ' in the Support queue')
 
 @bot.slash_command()
-async def showtopqueue(ctx): 
+async def showtopqueue(ctx,region: Option(choices=['NA', 'EUW'])): 
+    server = ctx.guild_id
     await ctx.respond(
-        str(len(Top_queue)) + ' in the Top queue')
+        str(len(Queues[server][region].top_queue)) + ' in the Top queue')
 
 @bot.slash_command()
-async def showmidqueue(ctx): 
+async def showmidqueue(ctx,region: Option(choices=['NA', 'EUW'])): 
+    server = ctx.guild_id 
     await ctx.respond(
-        str(len(Mid_queue)) + ' in the Mid queue')
+        str(len(Queues[server][region].mid_queue)) + ' in the Mid queue')
 
 #Pop queue    
 @tasks.loop(seconds=30) #make 5min in final deploy
 async def pop_queue():  #currently looping forever make it so the players are removed from the queue when added to a match.
-    if len(Top_queue)>=2:
-        match_info = choose_solo('Top')
-        players = match_info[0] 
-        match = match_info[1]
-        creator_msg = match[0]
-        name_msg = match[1]
-        type_msg = match[2]
-        pwd_msg = match[3]
-        bluelaner = match[4][0]
-        redlaner = match[4][1]
-        diff_msg = match[5]
-        users = (players['Blue'],players['Red'])
-        await popmsg(users,str(creator_msg) + '\n' + str(name_msg) + '\n' + str(type_msg) + '\n' + str(pwd_msg) +  '\n' + str(bluelaner) + '\n' + str(redlaner) + '\n' + str(diff_msg),DM=True,channel=False,channel_name=False)
-    if len(Mid_queue)>=2:
-        match_info = choose_solo('Mid')
-        players = match_info[0] 
-        match = match_info[1]
-        creator_msg = match[0]
-        name_msg = match[1]
-        type_msg = match[2]
-        pwd_msg = match[3]
-        bluelaner = match[4][0]
-        redlaner = match[4][1]
-        diff_msg = match[5]
-        users = (players['Blue'],players['Red'])
-        await popmsg(users,str(creator_msg) + '\n' + str(name_msg) + '\n' + str(type_msg) + '\n' + str(pwd_msg) +  '\n' + str(bluelaner) + '\n' + str(redlaner) + '\n' + str(diff_msg),DM=True,channel=False,channel_name=False)
-    if len(ADC_queue) >= 2 and len(Sup_queue) >= 2:
-       await choose_duo()   
+    regions =['NA', 'EUW']
+    server_ids = Guilds.col_values(col=1)[1:] 
+    for server in server_ids:
+        for region in regions:
+            if len(Queues[server][region].top_queue)>=2:
+                match_info = choose_solo('Top')
+                players = match_info[0] 
+                match = match_info[1]
+                creator_msg = match[0]
+                name_msg = match[1]
+                type_msg = match[2]
+                pwd_msg = match[3]
+                bluelaner = match[4][0]
+                redlaner = match[4][1]
+                diff_msg = match[5]
+                users = (players['Blue'],players['Red'])
+                await popmsg(users,str(creator_msg) + '\n' + str(name_msg) + '\n' + str(type_msg) + '\n' + str(pwd_msg) +  '\n' + str(bluelaner) + '\n' + str(redlaner) + '\n' + str(diff_msg),DM=True,channel=False,channel_name=False)
+            if len(Queues[server][region].mid_queue)>=2:
+                match_info = choose_solo('Mid')
+                players = match_info[0] 
+                match = match_info[1]
+                creator_msg = match[0]
+                name_msg = match[1]
+                type_msg = match[2]
+                pwd_msg = match[3]
+                bluelaner = match[4][0]
+                redlaner = match[4][1]
+                diff_msg = match[5]
+                users = (players['Blue'],players['Red'])
+                await popmsg(users,str(creator_msg) + '\n' + str(name_msg) + '\n' + str(type_msg) + '\n' + str(pwd_msg) +  '\n' + str(bluelaner) + '\n' + str(redlaner) + '\n' + str(diff_msg),DM=True,channel=False,channel_name=False)
+            if len(Queues[server][region].adc_queue) >= 2 and len(Queues[server][region].sup_queue) >= 2:
+                await choose_duo()   
 bot.run(token)                                                                                                                                           

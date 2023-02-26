@@ -43,5 +43,4 @@ Botlaners = bot_database.get_worksheet_by_id(0)
 Supports = bot_database.get_worksheet_by_id(1953196714)
 Tops = bot_database.get_worksheet_by_id(839126568)
 Mids = bot_database.get_worksheet_by_id(431869411)
-
-
+Guilds = bot_database.get_worksheet_by_id(1531822391)

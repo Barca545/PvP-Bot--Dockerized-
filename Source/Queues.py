@@ -30,7 +30,22 @@ dummy_adc_1 = Player('Test3#303030',221397446066962435, 'Test 3', 4500, 'Support
 #ADC_queue = {'Test3#303030': dummy_adc_1, 'Test1#303030':dummy_supp_1 } 
 #Sup_queue = {'Test1#303030': dummy_supp_1,'Test2#303030': dummy_supp_2}
 
-Top_queue = {}
-Mid_queue = {}
-ADC_queue = {}
-Sup_queue = {}
+class Queue:
+    def __init__(self):
+        self.top_queue = {}
+        self.mid_queue = {}
+        self.adc_queue = {}
+        self.sup_queue = {}
+
+def build_queues():
+    server_ids = Guilds.col_values(col=1)[1:] 
+    Queues = {}
+    regions = ['NA', 'EUW']
+    for server in server_ids:
+        Queues[server] = {}
+        for region in regions:
+            Queues[server][region] = Queue()
+    print(Queues)
+    return Queues
+
+

@@ -54,15 +54,15 @@ class Match:
         else:
             solodiff = delta_mmr(self.primary_players_dict['Blue'].rank,self.primary_players_dict['Red'].rank)
             return solodiff
-    def lane_role(role):
+    def lane_role(role,server,region):
         if role == 'Top':
-            return Top_queue 
+            return Queues[server][region].top_queue 
         elif role == 'Mid':
-            return Mid_queue
+            return Queues[server][region].mid_queue 
         elif role == 'ADC':
-            return ADC_queue
+            return Queues[server][region].adc_queue 
         elif role == 'Support':
-            return Sup_queue
+            return Queues[server][region].sup_queue 
     def choose_2nd(blue_laner,lane_queue):       
         best_laner =  None
         for i in list(lane_queue.keys()):
@@ -87,8 +87,8 @@ class Match:
                 players_dict['Blue'] = first_player
                 players_dict['Red'] = second_player
         return players_dict   
-    def choose_players(role,queue):        
-        queue = Match.lane_role(role)        
+    def choose_players(role,queue,server,region):        
+        queue = Match.lane_role(role,server,region)        
         first_player = queue[list(queue.keys())[0]]
         for i in range(0,2100,100):
             second_player = Match.choose_2nd(first_player,queue)
@@ -119,14 +119,14 @@ class Match:
             #these all need to become sends/responds probably return as a list and then call each item. Are sub methods a thing?
         return(creator_msg, name_msg, type_msg,pwd_msg,players,diff_msg)
 
-def choose_solo(role:str): #This probably needs to be an async function.
-    players = Match.choose_players(role,role)
+def choose_solo(role:str,server,region): #This probably needs to be an async function.
+    players = Match.choose_players(role,server,region)
     match = Match(role,players)
     match_players = (players, match.info())
     return match_players
-def choose_duo(): #This probably needs to be an async function.
-    ADC_players = Match.choose_players('Bot','ADC')
-    Sup_players = Match.choose_players('Bot','Support')
+def choose_duo(server,region): #This probably needs to be an async function.
+    ADC_players = Match.choose_players('ADC',server,region)
+    Sup_players = Match.choose_players('Support',server,region)
     Bot_match = Match('Bot',ADC_players,Sup_players)
     match_players = (ADC_players, Sup_players, Bot_match.info())  
     return match_players

@@ -47,5 +47,5 @@ def build_queues():
             Queues[server][region] = Queue()
     print(Queues)
     return Queues
-
+Queues = build_queues()
 

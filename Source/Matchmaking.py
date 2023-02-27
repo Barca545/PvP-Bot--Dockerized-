@@ -9,15 +9,6 @@ from Queues import *
 def delta_mmr(laner_1, laner_2): 
     return abs(laner_1 - laner_2)
     
-async def popmsg(recipients,msg,DM:bool,channel:bool,channel_name:int):     
-        for j in recipients: 
-            user_id = bot.get_user(j.disc_id)
-        if DM == True:    
-            await user_id.send(msg)
-        if channel == True:       
-            channel = bot.get_channel(channel_name) #1063664070034718760 is the test channel id 
-            await channel.send(msg)  
-
 def password():
         pwd = ''
         for i in range(13):
@@ -41,7 +32,6 @@ class Match:
         self.blue_support = Match.check_support(self,'Blue')
         self.red_support = Match.check_support(self,'Red')
         self.diff = Match.find_diff(self)
-    
     def check_support(self,side:str):
         if self.secondary_players_dict != None:
             return self.secondary_players_dict[side]
@@ -98,36 +88,40 @@ class Match:
                 del queue[second_player.disc_name]
                 return Match.side_selection(first_player,second_player)
             elif delta_mmr(first_player.rank,second_player.rank) > mmr_band:
-                time.sleep(0) #make 0 in final deploy                                    
-    def info(self):
-        creator_msg = 'Lobby Creator: ' + self.creator 
-        name_msg = 'Lobby Name: ' + self.creator + "'s Lobby"
-        type_msg = 'Lobby Type: '+ self.lane
-        pwd_msg =  'Password: ' + self.pwd
-        if self.secondary_players_dict is None:
-            blue = 'Blue ' + self.blue_player_1.role+': ' + self.blue_player_1.disc_name 
-            red = 'Red ' + self.red_player_1.role+': ' + self.red_player_1.disc_name  
-            players = [blue,red]
-            diff_msg = 'Elo Difference: '+ str(self.diff) 
-        elif self.secondary_players_dict is not None:
-            blue_ADC = 'Blue ' + self.blue_player_1.role+': '+ self.blue_player_1.disc_name 
-            blue_support = 'Blue '+ self.blue_support.role+': '+ self.blue_support.disc_name 
-            red_ADC = 'Red '+ self.red_player_1.role+': '+ self.red_player_1.disc_name  
-            red_support = 'Red '+self.red_support.role+': ' + self.red_support.disc_name
-            players = [blue_ADC,blue_support,red_ADC,red_support]
-            diff_msg = 'Elo Difference: '+ str(self.diff)  
-            #these all need to become sends/responds probably return as a list and then call each item. Are sub methods a thing?
-        return(creator_msg, name_msg, type_msg,pwd_msg,players,diff_msg)
+                time.sleep(0) #make 30 in final deploy                                    
 
 def choose_solo(role:str,server,region): #This probably needs to be an async function.
     players = Match.choose_players(role,server,region)
-    match = Match(role,players)
-    match_players = (players, match.info())
-    return match_players
+    solo_match = Match(role,players)
+    return solo_match
 def choose_duo(server,region): #This probably needs to be an async function.
     ADC_players = Match.choose_players('ADC',server,region)
     Sup_players = Match.choose_players('Support',server,region)
     Bot_match = Match('Bot',ADC_players,Sup_players)
-    match_players = (ADC_players, Sup_players, Bot_match.info())  
-    return match_players
+    return Bot_match
 
+async def popmsg(users,match:Match,DM:bool,channel:int):     
+    for j in users: 
+        user_id = bot.get_user(j.disc_id)
+    def msg():
+        message = discord.embed(title = 'Lobby Name: ' + match.creator + "'s Lobby")
+        message.add_field(name='Lobby Creator:', value = match.creator)
+        message.add_field(name='Lobby Type:', value = match.lane)
+        message.add_field(name='Password: ' + match.pwd)
+        if match.secondary_players_dict is None:
+            message.add_field(name='Blue side '+match.blue_player_1.role + ':', value=match.blue_player_1.disc_name,inline=True)
+            message.add_field(name='Red side '+match.red_player_1.role + ':', value=match.red_player_1.disc_name,inline=True)
+            message.add_field(name='Elo Difference:', value=str(match.diff))
+        elif match.secondary_players_dict is not None:
+            message.add_field(name='Blue side '+match.blue_player_1.role + ':', value=match.blue_player_1.disc_name,inline=True)
+            message.add_field(name='Blue side '+match.blue_support.role + ':', value=match.blue_support.disc_name,inline=True)
+            message.add_field(name='Red side '+match.red_player_1.role + ':', value=match.red_player_1.disc_name,inline=True)
+            message.add_field(name='Red side '+match.red_support.role + ':', value=match.red_support.disc_name,inline=True)
+            message.add_field(name='Elo Difference:', value=str(match.diff))      
+        return message
+    message = msg()
+    if DM == True:    
+        await user_id.send(message)
+    if channel is not None:       
+        channel = bot.get_channel(channel) 
+        await channel.send(message)  

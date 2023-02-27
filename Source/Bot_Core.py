@@ -126,7 +126,7 @@ async def showmidqueue(ctx,region: Option(choices=['NA', 'EUW'])):
 
 #Pop queue    
 @tasks.loop(seconds=60) #make 5min in final deploy
-async def pop_queue():  #currently looping forever make it so the players are removed from the queue when added to a match.
+async def pop_queue(): 
     regions =['NA', 'EUW']
     servers = Guilds.col_values(col=1)[1:]
     for server_id in servers:
@@ -134,44 +134,15 @@ async def pop_queue():  #currently looping forever make it so the players are re
         channel_id = Guilds.row_values(Guilds.find(server).row)[Guilds.find(server).col+0] #still not convinced this shouldn't be +1
         for region in regions:
             if len(Queues[server][region].top_queue)>=2:
-                match_info = choose_solo('Top')
-                players = match_info[0] 
-                match = match_info[1]
-                creator_msg = match[0]
-                name_msg = match[1]
-                type_msg = match[2]
-                pwd_msg = match[3]
-                bluelaner = match[4][0]
-                redlaner = match[4][1]
-                diff_msg = match[5]
-                users = (players['Blue'],players['Red'])
-                await popmsg(users,str(creator_msg) + '\n' + str(name_msg) + '\n' + str(type_msg) + '\n' + str(pwd_msg) +  '\n' + str(bluelaner) + '\n' + str(redlaner) + '\n' + str(diff_msg),DM=True,channel=channel_id,channel_name=False)
+                top_match = choose_solo('Top')
+                users =[top_match.blue_player_1.disc_name,top_match.red_player_1.disc_name]
+                await popmsg(users,top_match,DM=True,channel=channel_id)
             if len(Queues[server][region].mid_queue)>=2:
-                match_info = choose_solo('Mid')
-                players = match_info[0] 
-                match = match_info[1]
-                creator_msg = match[0]
-                name_msg = match[1]
-                type_msg = match[2]
-                pwd_msg = match[3]
-                bluelaner = match[4][0]
-                redlaner = match[4][1]
-                diff_msg = match[5]
-                users = (players['Blue'],players['Red'])
-                await popmsg(users,str(creator_msg) + '\n' + str(name_msg) + '\n' + str(type_msg) + '\n' + str(pwd_msg) +  '\n' + str(bluelaner) + '\n' + str(redlaner) + '\n' + str(diff_msg),DM=True,channel=channel_id,channel_name=False)
+                mid_match = choose_solo('Mid')
+                users =[mid_match.blue_player_1.disc_name,mid_match.red_player_1.disc_name]
+                await popmsg(users,mid_match,DM=True,channel=channel_id)
             if len(Queues[server][region].adc_queue) >= 2 and len(Queues[server][region].sup_queue) >= 2:
-                match_info = choose_duo()
-                players = match_info[0] 
-                match = match_info[1]
-                creator_msg = match[0]
-                name_msg = match[1]
-                type_msg = match[2]
-                pwd_msg = match[3]
-                blueadc = match[4][0]
-                bluesup = match[4][1]
-                redadc = match[4][2]
-                redsup = match[4][3]
-                diff_msg = match[5]
-                users = (players['Blue'],players['Red'])
-                await popmsg(users,str(creator_msg) + '\n' + str(name_msg) + '\n' + str(type_msg) + '\n' + str(pwd_msg) +  '\n' + str(blueadc) + '\n' + str(bluesup) + '\n' + str(redadc) + '\n' + str(redsup) +'\n' + str(diff_msg),DM=True,channel=channel_id,channel_name=False)   
+                bot_match = choose_duo()
+                users = [bot_match.blue_player_1.disc_name, bot_match.blue_support.disc_name,bot_match.red_player_1.disc_name,bot_match.red_support.disc_name]
+                await popmsg(users,bot_match,DM=True,channel=channel_id)
 bot.run(token)                                                                                                                                           

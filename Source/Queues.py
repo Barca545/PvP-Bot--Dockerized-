@@ -3,21 +3,24 @@ from Bot_initiate import *
 import random
 
 class Player:
-    def __init__ (self, disc_name, disc_id, ign, rank, role, champ):
+    def __init__ (self, disc_name, disc_id, ign, rank, role,champ):
         self.disc_name = disc_name
         self.disc_id = disc_id
         self.ign = ign
         self.rank = rank 
         self.role = role
         self.champ = champ
-    def build(user,role,db):
+    def build(user,role,db,champ):
         cell = db.find(user)
         disc_name = user
         disc_id = db.row_values(cell.row)[cell.col+2]
         ign = db.row_values(cell.row)[cell.col+1]
         rank = db.row_values(cell.row)[cell.col+2]
         role = role
-        champ = str(random.choice(db.row_values(cell.row)[cell.col+5:]))
+        if champ == None:
+            champ = str(random.choice(db.row_values(cell.row)[cell.col+5:]))
+        else:
+            champ==champ 
         return Player(disc_name, ign, disc_id, rank, role, champ)
 
 #Queues: Remove dummy players
@@ -48,4 +51,3 @@ def build_queues():
     print(Queues)
     return Queues
 Queues = build_queues()
-

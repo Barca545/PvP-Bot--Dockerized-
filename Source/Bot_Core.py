@@ -102,10 +102,10 @@ async def leavequeue(ctx, region: Option(choices=['NA', 'EUW']),role: Option(cho
 
 #/showqueues
 @bot.slash_command()
-async def showqueue(ctx,region:Option(choices=['NA', 'EUW']),lane:Option(choices=['Top Lane', 'Middle Lane', 'Bottom Lane'])): 
+async def showqueue(ctx,region:Option(choices=['NA', 'EUW']),lane:Option(choices=['Top Lane', 'Middle Lane', 'Bottom Lane', 'All'])): 
     server = str(ctx.guild_id)
     message = showqmsg(server,region,lane)         
-    await ctx.respond(message)
+    await ctx.respond(embed=message)
         
 #Pop queue    
 @tasks.loop(seconds=60) #make 2min in final deploy

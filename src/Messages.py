@@ -19,7 +19,7 @@ def showqmsg(server,region,lane):
     elif lane == 'Top Lane':
         tops = Queues[server][region].top_queue.keys()
         msg = discord.Embed(title='__**Middle Queue**__')
-        msg.add_field(name='**Top laners**', value=str(len(tops))+' players in the middle lane queue: ' + ', '.join(tops))
+        msg.add_field(name='**Top laners**', value=str(len(tops))+' players in the Top lane queue: ' + ', '.join(tops))
         return msg
     else:
         tops = Queues[server][region].top_queue.keys()
@@ -27,8 +27,8 @@ def showqmsg(server,region,lane):
         adcs = Queues[server][region].adc_queue.keys()
         supports = Queues[server][region].sup_queue.keys()
         msg = discord.Embed(title='__**All Queues**__')
+        msg.add_field(name='**Top laners**', value=str(len(tops))+' players in the top lane queue: ' + ', '.join(tops),inline=False)
         msg.add_field(name='**Middle Laners**', value=str(len(mids))+' players in the middle lane queue: ' + ', '.join(mids),inline=False)
-        msg.add_field(name='**Top laners**', value=str(len(tops))+' players in the middle lane queue: ' + ', '.join(tops),inline=False)
         msg.add_field(name='**Adcs**', value=str(len(adcs))+' players in the ADC queue: ' + ', '.join(adcs))
         msg.add_field(name='**Supports**', value=str(len(supports))+' players in the support queue: ' + ', '.join(supports),inline=False)
         return msg

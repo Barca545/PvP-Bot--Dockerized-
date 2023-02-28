@@ -99,29 +99,3 @@ def choose_duo(server,region): #This probably needs to be an async function.
     Sup_players = Match.choose_players('Support',server,region)
     Bot_match = Match('Bot',ADC_players,Sup_players)
     return Bot_match
-
-async def popmsg(users,match:Match,DM:bool,channel:int):     
-    for j in users: 
-        user_id = bot.get_user(j.disc_id)
-    def msg():
-        message = discord.embed(title = 'Lobby Name: ' + match.creator + "'s Lobby")
-        message.add_field(name='Lobby Creator:', value = match.creator)
-        message.add_field(name='Lobby Type:', value = match.lane)
-        message.add_field(name='Password: ' + match.pwd)
-        if match.secondary_players_dict is None:
-            message.add_field(name='Blue side '+match.blue_player_1.role + ':', value=match.blue_player_1.disc_name,inline=True)
-            message.add_field(name='Red side '+match.red_player_1.role + ':', value=match.red_player_1.disc_name,inline=True)
-            message.add_field(name='Elo Difference:', value=str(match.diff))
-        elif match.secondary_players_dict is not None:
-            message.add_field(name='Blue side '+match.blue_player_1.role + ':', value=match.blue_player_1.disc_name,inline=True)
-            message.add_field(name='Blue side '+match.blue_support.role + ':', value=match.blue_support.disc_name,inline=True)
-            message.add_field(name='Red side '+match.red_player_1.role + ':', value=match.red_player_1.disc_name,inline=True)
-            message.add_field(name='Red side '+match.red_support.role + ':', value=match.red_support.disc_name,inline=True)
-            message.add_field(name='Elo Difference:', value=str(match.diff))      
-        return message
-    message = msg()
-    if DM == True:    
-        await user_id.send(message)
-    if channel is not None:       
-        channel = bot.get_channel(channel) 
-        await channel.send(message)  

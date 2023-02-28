@@ -1,8 +1,6 @@
 from Bot_initiate import *
 from Matchmaking import *
-#Supp_Champs = ['Alistar', 'Amumu','Ashe', 'Blitzcrank','Braum','Heimerdinger','Janna','Leona','Lulu','Lux','Morgana','Nami','Nautilus','Pyke','Rakan','Renata Glasc','Seraphine','Sona','Soraka','Swain','Tham Kench','Taric','Thresh','Zilean','Zyra',]
-#ADC_Champs = ['Aphelios','Ashe','Caitlyn','Draven','Ezreal','Graves','Jhin','Jinx',"Kai'sa",'Kalista','Kindred',"Kog'ma",'Lucian','Miss Fortune','Samira','Senna','Quinn','Sivir','Tristana','Twitch','Varus','Vayne','Xayah','Zeri','Yasuo']
-#full list of support champs #Supp_Champs = ['Alistar', 'Amumu', 'Ashe', 'Bard', 'Blitzcrank', 'Brand','Braum','Heimerdinger','Ivern','Janna','Karma', 'Leona','Lulu','Lux','Malphite','Maokai','Morgana','Nami','Nautilus','Pantheon','Pyke','Rakan','Renata Glasc','Senna','Seraphine','Sona','Soraka','Swain','Tham Kench','Taric','Thresh',"Vel'Koz",'Xerath','Yuumi','Zac','Zilean','Zyra',]
+from Messages import *
 
 rank_as_mmr = {
     'Iron 2' : 300,
@@ -33,7 +31,6 @@ rank_as_mmr = {
     }
 roles = ['ADC','Support','Top', 'Mid']
 
-
 #discord set up
 @bot.event
 async def on_ready():
@@ -63,26 +60,26 @@ async def setup(ctx, ign, rank: Option(choices=rank_as_mmr),role: Option(choices
     await ctx.respond(f'Setup complete GLHF {ign}!!!')
 
 @bot.slash_command()
-async def joinqueue(ctx, region: Option(choices=['NA', 'EUW']), role: Option(choices=roles)):
+async def joinqueue(ctx, region: Option(choices=['NA', 'EUW']), role: Option(choices=roles),champ=None):
     server = str(ctx.guild_id)
     if role == 'ADC':
         user = Botlaners.find('{}'.format(ctx.author)).value
-        player = Player.build(user,role,Botlaners)
+        player = Player.build(user,role,Botlaners,champ=champ)
         Queues[server][region].adc_queue[player.disc_name] = player
         await ctx.respond(player.disc_name + ' has joined the ADC queue')
     elif role == 'Support':
         user = str(Supports.find('{}'.format(ctx.author)).value)
-        player = Player.build(user,role,Supports)
+        player = Player.build(user,role,Supports,champ=champ)
         Queues[server][region].sup_queue[player.disc_name] = player
         await ctx.respond(player.disc_name + ' has joined the Support queue')
     elif role == 'Mid':
         user = str(Mids.find('{}'.format(ctx.author)).value)
-        player = Player.build(user,role,Mids)
+        player = Player.build(user,role,Mids,champ=champ)
         Queues[server][region].mid_queue[player.disc_name] = player
         await ctx.respond(player.disc_name + ' has joined the Mid queue')
     elif role == 'Top':
         user = str(Tops.find('{}'.format(ctx.author)).value)
-        player = Player.build(user,role,Tops)
+        player = Player.build(user,role,Tops,champ=champ)
         Queues[server][region].top_queue[player.disc_name] = player
         await ctx.respond(player.disc_name + ' has joined the Top queue')
 
@@ -105,27 +102,13 @@ async def leavequeue(ctx, region: Option(choices=['NA', 'EUW']),role: Option(cho
 
 #/showqueues
 @bot.slash_command()
-async def showbotqueue(ctx,region: Option(choices=['NA', 'EUW'])): 
+async def showqueue(ctx,region:Option(choices=['NA', 'EUW']),lane:Option(choices=['Top Lane', 'Middle Lane', 'Bottom Lane'])): 
     server = str(ctx.guild_id)
-    await ctx.respond(
-        str(len(Queues[server][region].adc_queue)) + ' in the ADC queue' 
-        + '\n'  +
-        str(len(Queues[server][region].sup_queue)) + ' in the Support queue')
-
-@bot.slash_command()
-async def showtopqueue(ctx,region: Option(choices=['NA', 'EUW'])): 
-    server = str(ctx.guild_id)
-    await ctx.respond(
-        str(len(Queues[server][region].top_queue)) + ' in the Top queue')
-
-@bot.slash_command()
-async def showmidqueue(ctx,region: Option(choices=['NA', 'EUW'])): 
-    server = str(ctx.guild_id) 
-    await ctx.respond(
-        str(len(Queues[server][region].mid_queue)) + ' in the Mid queue')
-
+    message = showqmsg(server,region,lane)         
+    await ctx.respond(message)
+        
 #Pop queue    
-@tasks.loop(seconds=60) #make 5min in final deploy
+@tasks.loop(seconds=60) #make 2min in final deploy
 async def pop_queue(): 
     regions =['NA', 'EUW']
     servers = Guilds.col_values(col=1)[1:]

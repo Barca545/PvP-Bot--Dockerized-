@@ -1,4 +1,3 @@
-from Matchmaking import *
 from Bot_initiate import *
 import random
 
@@ -23,16 +22,7 @@ class Player:
             champ==champ 
         return Player(disc_name, ign, disc_id, rank, role, champ)
 
-#Queues: Remove dummy players
-dummy_supp_1 = Player('Test1#303030', 221397446066962435, 'Test 1', 1000, 'ADC', 'Lulu',  )
-dummy_supp_2 = Player('Test2#303030',221397446066962435,'Test 3', 3000, 'Mid', 'Soraka')
-dummy_adc_1 = Player('Test3#303030',221397446066962435, 'Test 3', 4500, 'Support','MF')
-
-#Top_queue = {'Test1#303030': dummy_supp_1,'Test2#303030': dummy_supp_2, 'Test3#303030':dummy_adc_1}
-#Mid_queue = {'Test1#303030': dummy_supp_1,'Test2#303030': dummy_supp_2}
-#ADC_queue = {'Test3#303030': dummy_adc_1, 'Test1#303030':dummy_supp_1 } 
-#Sup_queue = {'Test1#303030': dummy_supp_1,'Test2#303030': dummy_supp_2}
-
+#Queues: 
 class Queue:
     def __init__(self):
         self.top_queue = {}
@@ -50,4 +40,6 @@ def build_queues():
             Queues[server][region] = Queue()
     print(Queues)
     return Queues
+
 Queues = build_queues()
+

@@ -34,14 +34,15 @@ def showqmsg(server,region,lane):
         return msg
 
 #pop queue     
-async def popmsg(users,match:Match,DM:bool,channel:int):     
+async def popmsg(match:Match,channel_id:int,lane:str,DM=True,):     
+    users = list(filter(None,[match.blue_player_1,match.red_player_1,match.blue_support,match.red_support]))
     for j in users: 
-        user_id = bot.get_user(j.disc_id)
-    def msg():
-        message = discord.Embed(title = 'Lobby Name: ' + match.creator + "'s Lobby")
-        message.add_field(name='Lobby Creator:', value = match.creator,inline=False)
-        message.add_field(name='Lobby Type:', value = match.lane,inline=False)
-        message.add_field(name='Password: ' + match.pwd,inline=False)
+        user_id = bot.get_user(int(j.disc_id))
+    def msg(lane:str):
+        message = discord.Embed(title = 'Lobby Name: ' + match.creator + "'s Lobby",color=0xc27c0e)
+        message.add_field(name='Lobby Creator:', value= match.creator,inline=False)
+        message.add_field(name='Lobby Type:', value=lane,inline=False)
+        message.add_field(name='Password: ', value=match.pwd,inline=False)
         if match.secondary_players_dict is None:
             message.add_field(name='Blue side '+match.blue_player_1.role + ':', value=match.blue_player_1.disc_name,inline=True)
             message.add_field(name='Red side '+match.red_player_1.role + ':', value=match.red_player_1.disc_name,inline=True)
@@ -59,9 +60,8 @@ async def popmsg(users,match:Match,DM:bool,channel:int):
             'Red '+match.red_support.role + ': '+match.red_support.disc_name,inline=False)
             message.add_field(name='Elo Difference:', value=str(match.diff),inline=False)      
         return message
-    message = msg()
-    if DM == True:    
-        await user_id.send(embed=message)
-    if channel is not None:       
-        channel = bot.get_channel(channel) 
-        await channel.send(embed=message)  
+    message = msg(lane=lane)
+    if DM:    
+        await user_id.send(embed=message)     
+
+        

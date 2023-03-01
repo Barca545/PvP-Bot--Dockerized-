@@ -30,12 +30,13 @@ rank_as_mmr = {
     'Challenger' : 3500,
     }
 roles = ['ADC','Support','Top', 'Mid']
-
+Queues = build_queues()
 #discord set up
 @bot.event
 async def on_ready():
     print('We have logged in as {0.user}'.format(bot))
     pop_queue.start()
+    
 
 @bot.slash_command()
 async def set_channel(ctx):
@@ -114,18 +115,18 @@ async def pop_queue():
     servers = Guilds.col_values(col=1)[1:]
     for server_id in servers:
         server = str(server_id)  
-        channel_id = Guilds.row_values(Guilds.find(server).row)[Guilds.find(server).col+0] #still not convinced this shouldn't be +1
         for region in regions:
+            channel_id = int(Guilds.row_values(Guilds.find(server).row)[Guilds.find(server).col+0]) #still not convinced this shouldn't be +1        
             if len(Queues[server][region].top_queue)>=2:
-                top_match = choose_solo('Top')
-                users =[top_match.blue_player_1.disc_name,top_match.red_player_1.disc_name]
-                await popmsg(users,top_match,DM=True,channel=channel_id)
+                top_match = choose_solo(queue)
+                await popmsg(top_match,channel_id=channel_id,lane='Top Lane')
             if len(Queues[server][region].mid_queue)>=2:
-                mid_match = choose_solo('Mid')
-                users =[mid_match.blue_player_1.disc_name,mid_match.red_player_1.disc_name]
-                await popmsg(users,mid_match,DM=True,channel=channel_id)
+                queue=Queues[server][region].mid_queue
+                mid_match = choose_solo(queue)
+                await popmsg(mid_match,channel_id=channel_id,lane='Middle Lane')
             if len(Queues[server][region].adc_queue) >= 2 and len(Queues[server][region].sup_queue) >= 2:
-                bot_match = choose_duo()
-                users = [bot_match.blue_player_1.disc_name, bot_match.blue_support.disc_name,bot_match.red_player_1.disc_name,bot_match.red_support.disc_name]
-                await popmsg(users,bot_match,DM=True,channel=channel_id)
+                adc_queue=Queues[server][region].adc_queue
+                sup_queue=Queues[server][region].sup_queue
+                bot_match = choose_duo(adc_queue=adc_queue,sup_queue=sup_queue)
+                await popmsg(bot_match,channel_id=channel_id,lane='Bottom Lane')
 bot.run(token)                                                                                                                                           

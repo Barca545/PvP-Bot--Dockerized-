@@ -13,12 +13,12 @@ def showqmsg(server,region,lane):
         return msg
     elif lane == 'Middle Lane':
         mids = Queues[server][region].mid_queue.keys()
-        msg = discord.Embed(title='__**Middle Queue**__')
+        msg = discord.Embed(title='__**Middle Lane Queue**__')
         msg.add_field(name='**Middle Laners**', value=str(len(mids))+' players in the middle lane queue: ' + ', '.join(mids))
         return msg
     elif lane == 'Top Lane':
         tops = Queues[server][region].top_queue.keys()
-        msg = discord.Embed(title='__**Middle Queue**__')
+        msg = discord.Embed(title='__**Top Lane Queue**__')
         msg.add_field(name='**Top laners**', value=str(len(tops))+' players in the Top lane queue: ' + ', '.join(tops))
         return msg
     else:

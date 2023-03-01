@@ -1,5 +1,0 @@
-#ignore these files during commits
-*.env
-*.json
-*.txt
-

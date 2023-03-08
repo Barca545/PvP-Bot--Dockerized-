@@ -1,24 +1,25 @@
 import discord 
-from Queues import *
 from Matchmaking import Match
+from Queues import *
+from initiate import *
 
 #show queue
 def showqmsg(server,region,lane): 
     if lane == 'Bottom Lane':
         adcs = Queues[server][region].adc_queue.keys()
         supports = Queues[server][region].sup_queue.keys()
-        msg = discord.Embed(title='__**Bottom Lane Queue**__')
+        msg = discord.Embed(title='__**Bottom Lane Queue**__',color=0xc27c0e)
         msg.add_field(name='**Adcs**', value=str(len(adcs))+' players in the ADC queue: ' + ', '.join(adcs),inline=False)
         msg.add_field(name='**Supports**', value=str(len(supports))+' players in the support queue: ' + ', '.join(supports),inline=False)
         return msg
     elif lane == 'Middle Lane':
         mids = Queues[server][region].mid_queue.keys()
-        msg = discord.Embed(title='__**Middle Lane Queue**__')
+        msg = discord.Embed(title='__**Middle Lane Queue**__',color=0xc27c0e)
         msg.add_field(name='**Middle Laners**', value=str(len(mids))+' players in the middle lane queue: ' + ', '.join(mids))
         return msg
     elif lane == 'Top Lane':
         tops = Queues[server][region].top_queue.keys()
-        msg = discord.Embed(title='__**Top Lane Queue**__')
+        msg = discord.Embed(title='__**Top Lane Queue**__',color=0xc27c0e)
         msg.add_field(name='**Top laners**', value=str(len(tops))+' players in the Top lane queue: ' + ', '.join(tops))
         return msg
     else:
@@ -26,7 +27,7 @@ def showqmsg(server,region,lane):
         mids = Queues[server][region].mid_queue.keys()
         adcs = Queues[server][region].adc_queue.keys()
         supports = Queues[server][region].sup_queue.keys()
-        msg = discord.Embed(title='__**All Queues**__')
+        msg = discord.Embed(title='__**All Queues**__',color=0xc27c0e)
         msg.add_field(name='**Top laners**', value=str(len(tops))+' players in the top lane queue: ' + ', '.join(tops),inline=False)
         msg.add_field(name='**Middle Laners**', value=str(len(mids))+' players in the middle lane queue: ' + ', '.join(mids),inline=False)
         msg.add_field(name='**Adcs**', value=str(len(adcs))+' players in the ADC queue: ' + ', '.join(adcs))

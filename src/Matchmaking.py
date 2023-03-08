@@ -1,5 +1,5 @@
 import random
-from Bot_initiate import *
+from initiate import *
 import secrets
 import string
 import time

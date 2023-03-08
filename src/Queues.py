@@ -1,4 +1,4 @@
-from Bot_initiate import *
+from initiate import *
 import random
 
 class Player:
@@ -38,7 +38,6 @@ def build_queues():
         Queues[server] = {}
         for region in regions:
             Queues[server][region] = Queue()
-    print(Queues)
     return Queues
 
 Queues = build_queues()

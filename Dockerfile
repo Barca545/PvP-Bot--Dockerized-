@@ -21,4 +21,4 @@ ENV GOOGLE_APPLICATION_CREDENTIALS="/working/pvpbot_secrets/v2-bot-374602-e64743
 ENV PVP_TOKEN="/working/pvpbot_secrets/Discord_token.json"
 
 #Command to run on container start
-CMD [ "python", "Bot_Core.py", "--host=0.0.0.0"]
+CMD [ "python", "main.py", "--host=0.0.0.0"]

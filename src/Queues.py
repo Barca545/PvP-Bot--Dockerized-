@@ -2,20 +2,22 @@ from initiate import *
 import random
 
 class Player:
-    def __init__ (self, disc_name, disc_id, ign, rank, role):
+    def __init__ (self, disc_name, ign, disc_id, rank, opgg, role):
         self.disc_name = disc_name
         self.disc_id = disc_id
         self.ign = ign
         self.rank = rank 
         self.role = role
-    def build(user,role):
+        self.opgg = opgg
+    def build(user,role=None):
         cell = Players.find(user)
         disc_name = user
-        disc_id = Players.row_values(cell.row)[cell.col+2]
-        ign = Players.row_values(cell.row)[cell.col+1]
+        ign = Players.row_values(cell.row)[cell.col+0]
+        disc_id = Players.row_values(cell.row)[cell.col+1]
         rank = Players.row_values(cell.row)[cell.col+2]
+        opgg = Players.row_values(cell.row)[cell.col+3]
         role = role
-        return Player(disc_name, ign, disc_id, rank, role)
+        return Player(disc_name, ign, disc_id, rank, opgg, role)
 
 #Queues: 
 class Queue:

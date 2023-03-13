@@ -39,7 +39,7 @@ async def on_ready():
     print('We have logged in as {0.user}'.format(bot))
     pop_queue.start()
     
-
+#set channel
 @bot.slash_command()
 async def set_channel(ctx):
     guild = int(ctx.guild_id)
@@ -53,7 +53,8 @@ async def setup(ctx, ign, rank: Option(choices=rank_as_mmr), opgg_link):
     user = ctx.author
     id = user.id
     Players.append_row([str(user), ign, id,  rank_as_mmr[rank], opgg_link])
-    await ctx.respond(f'Setup complete GLHF {ign}!!!')
+    msg=setupmsg(ign=ign)
+    await ctx.respond(embed=msg)
 
 @bot.slash_command()
 async def joinqueue(ctx, region: Option(choices=['NA', 'EUW']), role: Option(choices=roles)):
@@ -96,7 +97,16 @@ async def showqueue(ctx,region:Option(choices=['NA', 'EUW']),lane:Option(choices
     server = str(ctx.guild_id)
     message = showqmsg(server,region,lane)         
     await ctx.respond(embed=message)
-        
+
+@bot.slash_command() 
+async def showprofile(ctx,username=None):
+    if username==None:
+        user = '{}'.format(ctx.author)
+    else:
+        user=username
+    player = Player.build(user)
+    msg=profilemsg(player.disc_name, player.ign, player.rank, player.opgg)
+    await ctx.respond(embed=msg)
 #Pop queue    
 @tasks.loop(seconds=60) #make 2min in final deploy
 async def pop_queue(): 

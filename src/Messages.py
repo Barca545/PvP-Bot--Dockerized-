@@ -3,6 +3,19 @@ from Matchmaking import Match
 from Queues import *
 from initiate import *
 
+def setupmsg(ign):
+    msg = discord.Embed(title='__**Set up Complete**__',value='You are set up ' + ign +'. See you on the Fields of Justice!',color=0xc27c0e)
+    return msg
+
+def profilemsg(disc_name, ign, rank, opgg):
+    msg = discord.Embed(title='__**Profile**__',color=0xc27c0e)
+    msg.add_field(name='__User__',value=disc_name,inline=False)
+    msg.add_field(name='IGN',value=ign,inline=False)
+    msg.add_field(name='__Rank__',value=rank,inline=False)
+    msg.add_field(name='__OP.GG__',value=opgg,inline=False)
+    return msg
+    
+
 #show queue
 def showqmsg(server,region,lane): 
     if lane == 'Bottom Lane':

@@ -2,25 +2,20 @@ from initiate import *
 import random
 
 class Player:
-    def __init__ (self, disc_name, disc_id, ign, rank, role,champ):
+    def __init__ (self, disc_name, disc_id, ign, rank, role):
         self.disc_name = disc_name
         self.disc_id = disc_id
         self.ign = ign
         self.rank = rank 
         self.role = role
-        self.champ = champ
-    def build(user,role,db,champ):
-        cell = db.find(user)
+    def build(user,role):
+        cell = Players.find(user)
         disc_name = user
-        disc_id = db.row_values(cell.row)[cell.col+2]
-        ign = db.row_values(cell.row)[cell.col+1]
-        rank = db.row_values(cell.row)[cell.col+2]
+        disc_id = Players.row_values(cell.row)[cell.col+2]
+        ign = Players.row_values(cell.row)[cell.col+1]
+        rank = Players.row_values(cell.row)[cell.col+2]
         role = role
-        if champ == None:
-            champ = str(random.choice(db.row_values(cell.row)[cell.col+5:]))
-        else:
-            champ==champ 
-        return Player(disc_name, ign, disc_id, rank, role, champ)
+        return Player(disc_name, ign, disc_id, rank, role)
 
 #Queues: 
 class Queue:

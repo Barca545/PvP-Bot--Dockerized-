@@ -49,40 +49,27 @@ async def set_channel(ctx):
 
 #/setup
 @bot.slash_command()
-async def setup(ctx, ign, rank: Option(choices=rank_as_mmr),role: Option(choices=roles), opgg_link, champ_1, champ_2, champ_3):             
+async def setup(ctx, ign, rank: Option(choices=rank_as_mmr), opgg_link):             
     user = ctx.author
     id = user.id
-    if role == 'ADC':
-        Botlaners.append_row([str(user), ign, id, rank_as_mmr[rank], opgg_link, champ_1, champ_2, champ_3])
-    elif role == 'Support':                               
-        Supports.append_row([str(user), ign, id, rank_as_mmr[rank], opgg_link, champ_1, champ_2, champ_3])
-    elif role == 'Top':
-        Tops.append_row([str(user), ign, id, rank_as_mmr[rank], opgg_link, champ_1, champ_2, champ_3])
-    elif role == 'Mid':
-        Mids.append_row([str(user), ign, id,  rank_as_mmr[rank], opgg_link, champ_1, champ_2, champ_3])
+    Players.append_row([str(user), ign, id,  rank_as_mmr[rank], opgg_link])
     await ctx.respond(f'Setup complete GLHF {ign}!!!')
 
 @bot.slash_command()
-async def joinqueue(ctx, region: Option(choices=['NA', 'EUW']), role: Option(choices=roles),champ=None):
+async def joinqueue(ctx, region: Option(choices=['NA', 'EUW']), role: Option(choices=roles)):
     server = str(ctx.guild_id)
-    if role == 'ADC':
-        user = Botlaners.find('{}'.format(ctx.author)).value
-        player = Player.build(user,role,Botlaners,champ=champ)
+    user = Players.find('{}'.format(ctx.author)).value
+    player = Player.build(user,role)
+    if role == 'ADC':    
         Queues[server][region].adc_queue[player.disc_name] = player
         await ctx.respond(player.disc_name + ' has joined the ADC queue')
     elif role == 'Support':
-        user = str(Supports.find('{}'.format(ctx.author)).value)
-        player = Player.build(user,role,Supports,champ=champ)
         Queues[server][region].sup_queue[player.disc_name] = player
         await ctx.respond(player.disc_name + ' has joined the Support queue')
     elif role == 'Mid':
-        user = str(Mids.find('{}'.format(ctx.author)).value)
-        player = Player.build(user,role,Mids,champ=champ)
         Queues[server][region].mid_queue[player.disc_name] = player
         await ctx.respond(player.disc_name + ' has joined the Mid queue')
     elif role == 'Top':
-        user = str(Tops.find('{}'.format(ctx.author)).value)
-        player = Player.build(user,role,Tops,champ=champ)
         Queues[server][region].top_queue[player.disc_name] = player
         await ctx.respond(player.disc_name + ' has joined the Top queue')
 

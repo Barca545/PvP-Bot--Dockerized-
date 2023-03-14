@@ -26,7 +26,7 @@ bot = commands.Bot(command_prefix='/', intents=intents)
 with open (gspread_cred_path) as file2:
     credentials = json.load(file2)
 gc = gspread.service_account_from_dict(credentials)
-
 database = gc.open_by_url('https://docs.google.com/spreadsheets/d/134T4caUqFHG3crrS_Rk9Z3ON5o6mc19tPt4kTm4R834')
 Players = database.get_worksheet_by_id(0)
 Guilds = database.get_worksheet_by_id(1531822391)
+

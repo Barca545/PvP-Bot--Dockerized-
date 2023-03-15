@@ -76,8 +76,7 @@ class Match:
                 players_dict['Blue'] = first_player
                 players_dict['Red'] = second_player
         return players_dict   
-    def choose_players(queue):        
-        #queue = Match.lane_role(role,server,region)        
+    def choose_players(queue):             
         first_player = queue[list(queue.keys())[0]]
         for i in range(0,2100,100):
             second_player = Match.choose_2nd(first_player,queue)
@@ -87,13 +86,13 @@ class Match:
                 del queue[second_player.disc_name]
                 return Match.side_selection(first_player,second_player)
             elif delta_mmr(first_player.rank,second_player.rank) > mmr_band:
-                time.sleep(0) #make 30 in final deploy                                    
+                time.sleep(30)                                
 
-def choose_solo(queue): #This probably needs to be an async function.
+def choose_solo(queue): #This might need to be an async function.
     players = Match.choose_players(queue=queue)
     solo_match = Match(players)
     return solo_match
-def choose_duo(adc_queue,sup_queue): #This probably needs to be an async function.
+def choose_duo(adc_queue,sup_queue): #This might need to be an async function.
     ADC_players = Match.choose_players(queue=adc_queue)
     Sup_players = Match.choose_players(queue=sup_queue)
     Bot_match = Match(ADC_players,Sup_players)

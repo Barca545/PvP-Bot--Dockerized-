@@ -2,22 +2,18 @@ from initiate import *
 import random
 
 class Player:
-    def __init__ (self, disc_name, ign, disc_id, rank, opgg, role):
-        self.disc_name = disc_name
+    def __init__ (self, disc_id, ign, rank, opgg, role):
         self.disc_id = disc_id
+        self.disc_name = "<@"+str(disc_id)+">"
         self.ign = ign
         self.rank = rank 
-        self.role = role
         self.opgg = opgg
-    def build(user,role=None):
-        cell = Players.find(user)
-        disc_name = user
-        ign = Players.row_values(cell.row)[cell.col+0]
-        disc_id = Players.row_values(cell.row)[cell.col+1]
-        rank = Players.row_values(cell.row)[cell.col+2]
-        opgg = Players.row_values(cell.row)[cell.col+3]
-        role = role
-        return Player(disc_name, ign, disc_id, rank, opgg, role)
+        self.role = role
+    def build(user_id,role=None):
+        c.execute(f'''SELECT * FROM users WHERE disc_id = {user_id}''')
+        player = c.fetchone()
+        conn.close
+        return Player(player[0], player[1], player[2], player[3], role)
 
 #Queues: 
 class Queue:
@@ -28,7 +24,9 @@ class Queue:
         self.sup_queue = {}
 
 def build_queues():
-    server_ids = Guilds.col_values(col=1)[1:] 
+    c.execute('SELECT server_id FROM servers')
+    server_ids = c.fetchall()
+    conn.close
     Queues = {}
     regions = ['NA', 'EUW']
     for server in server_ids:
@@ -38,4 +36,3 @@ def build_queues():
     return Queues
 
 Queues = build_queues()
-

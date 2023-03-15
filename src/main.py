@@ -44,23 +44,28 @@ async def on_ready():
 async def set_channel(ctx):
     guild = int(ctx.guild_id)
     channel= int(ctx.channel_id)
-    Guilds.append_row([guild,channel])
-    await ctx.respond('Bot channel is now ' + '#'+str(channel))
+    c.execute(f'''INSERT INTO servers (server_id, channel_id) VALUES ({guild},{channel})''')
+    conn.close #if this does not work probably because of this line
+    await ctx.respond('Bot channel is now ' + '<#'+str(channel)+'>')
 
 #/setup
 @bot.slash_command()
 async def setup(ctx, ign, rank: Option(choices=rank_as_mmr), opgg_link):             
-    user = ctx.author
-    id = user.id
-    Players.append_row([str(user), ign, id,  rank_as_mmr[rank], opgg_link])
+    user_id = int(ctx.author.id)
+    c.execute(f'''
+    INSERT INTO users (disc_id, ign, rank, opgg)
+        VALUES 
+        ({user_id},'{ign}','{rank}', '{opgg_link}')
+    ''')
+    conn.close #if this does not work probably because of this line
     msg=setupmsg(ign=ign)
     await ctx.respond(embed=msg)
 
 @bot.slash_command()
 async def joinqueue(ctx, region: Option(choices=['NA', 'EUW']), role: Option(choices=roles)):
     server = str(ctx.guild_id)
-    user = Players.find('{}'.format(ctx.author)).value
-    player = Player.build(user,role)
+    user_id = int(ctx.author.id)
+    player = Player.build(user_id,role)
     if role == 'ADC':    
         Queues[server][region].adc_queue[player.disc_name] = player
         await ctx.respond(player.disc_name + ' has joined the ADC queue')
@@ -111,11 +116,15 @@ async def showprofile(ctx,username=None):
 @tasks.loop(seconds=60) #make 2min in final deploy
 async def pop_queue(): 
     regions =['NA', 'EUW']
-    servers = Guilds.col_values(col=1)[1:]
+    c.execute('''SELECT server_id FROM servers''')
+    conn.close #if this does not work probably because of this line
+    servers = c.fetchall()
     for server_id in servers:
         server = str(server_id)  
         for region in regions:
-            channel_id = int(Guilds.row_values(Guilds.find(server).row)[Guilds.find(server).col+0]) #still not convinced this shouldn't be +1        
+            c.execute(f'''SELECT channel_id FROM servers WHERE server_id={server_id}''')
+            channel_id = c.fetchall()
+            conn.close #if this does not work probably because of this line
             if len(Queues[server][region].top_queue)>=2:
                 top_match = choose_solo(queue)
                 await popmsg(top_match,channel_id=channel_id,lane='Top Lane')

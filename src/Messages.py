@@ -77,5 +77,3 @@ async def popmsg(match:Match,channel_id:int,lane:str,DM=True,):
     message = msg(lane=lane)
     if DM:    
         await user_id.send(embed=message)     
-
-        

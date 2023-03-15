@@ -32,12 +32,15 @@ class Queue:
             Queues[server_id] = {}
             for region in regions:
                 Queues[server_id][region] = Queue()
+        print(Queues)
         return Queues
     def add_server(server_id):
         regions = ['NA', 'EUW']
+        Queues[server_id] = {}
         for region in regions:
             Queues[server_id][region] = Queue()
-        return Queues
-
+            print(Queues)
+            return Queues
+        
 Queues = Queue.build()
 

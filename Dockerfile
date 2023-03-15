@@ -17,7 +17,6 @@ RUN pip install -r requirements.txt
 COPY src/ .
 
 #Install the path ENVs for credentials 
-ENV GOOGLE_APPLICATION_CREDENTIALS="/working/pvpbot_secrets/v2-bot-374602-e64743327d13.json"
 ENV PVP_TOKEN="/working/pvpbot_secrets/Discord_token.json"
 
 #Connect to db

@@ -6,7 +6,7 @@ import time
 from Queues import *
 
 #Could these be inside another class as a method maybe include pwd too?
-def delta_mmr(laner_1, laner_2): 
+def delta_mmr(laner_1:int, laner_2:int): 
     return abs(laner_1 - laner_2)
     
 def password():
@@ -86,7 +86,7 @@ class Match:
                 del queue[second_player.disc_name]
                 return Match.side_selection(first_player,second_player)
             elif delta_mmr(first_player.rank,second_player.rank) > mmr_band:
-                time.sleep(30)                                
+                time.sleep(0)                                
 
 def choose_solo(queue): #This might need to be an async function.
     players = Match.choose_players(queue=queue)

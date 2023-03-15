@@ -1,12 +1,17 @@
 import discord 
+from discord import Embed
 from Matchmaking import Match
 from Queues import *
 from initiate import *
 
+Embed()
+#set up
 def setupmsg(ign):
-    msg = discord.Embed(title='__**Set up Complete**__',value='You are set up ' + ign +'. See you on the Fields of Justice!',color=0xc27c0e)
+    msg = discord.Embed(color=0xc27c0e)
+    msg.add_field(name='__**Set up Complete**__',value='You are set up ' + ign +'. See you on the Fields of Justice!')
     return msg
 
+#show profile
 def profilemsg(disc_name, ign, rank, opgg):
     msg = discord.Embed(title='__**Profile**__',color=0xc27c0e)
     msg.add_field(name='__User__',value=disc_name,inline=False)
@@ -15,7 +20,6 @@ def profilemsg(disc_name, ign, rank, opgg):
     msg.add_field(name='__OP.GG__',value=opgg,inline=False)
     return msg
     
-
 #show queue
 def showqmsg(server,region,lane): 
     if lane == 'Bottom Lane':

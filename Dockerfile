@@ -20,5 +20,8 @@ COPY src/ .
 ENV GOOGLE_APPLICATION_CREDENTIALS="/working/pvpbot_secrets/v2-bot-374602-e64743327d13.json"
 ENV PVP_TOKEN="/working/pvpbot_secrets/Discord_token.json"
 
+#Connect to db
+VOLUME [ "/data"]
+
 #Command to run on container start
 CMD [ "python", "main.py", "--host=0.0.0.0"]

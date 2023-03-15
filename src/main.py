@@ -68,35 +68,32 @@ async def joinqueue(ctx, region: Option(choices=['NA', 'EUW']), role: Option(cho
     server_id = int(ctx.guild_id)
     user_id = int(ctx.author.id)
     player = Player.build(user_id,role)
+    msg=updatequeuemsg(user_id,role,'joined')
     if role == 'ADC':    
         Queues[server_id][region].adc_queue[player.disc_name] = player
-        await ctx.respond(player.disc_name + ' has joined the ADC queue')
     elif role == 'Support':
         Queues[server_id][region].sup_queue[player.disc_name] = player
-        await ctx.respond(player.disc_name + ' has joined the Support queue')
     elif role == 'Mid':
         Queues[server_id][region].mid_queue[player.disc_name] = player
-        await ctx.respond(player.disc_name + ' has joined the Mid queue')
     elif role == 'Top':
-        Queues[server_id                                                                                                                                        ][region].top_queue[player.disc_name] = player
-        await ctx.respond(player.disc_name + ' has joined the Top queue')
-
+        Queues[server_id][region].top_queue[player.disc_name] = player
+    await ctx.respond(embed=msg)
 @bot.slash_command()
 async def leavequeue(ctx, region: Option(choices=['NA', 'EUW']),role: Option(choices=roles)):
-    user = '{}'.format(ctx.author)
+    user_id = int(ctx.author.id)
+    player = Player.build(user_id,role)
     server_id = int(ctx.guild_id)
     if role == 'ADC':  
-        del Queues[server_id][region].adc_queue[user]
-        await ctx.respond(user + ' has left the ADC queue')
+        
+        del Queues[server_id][region].adc_queue[player.disc_name]
     elif role == 'Support':
-        del Queues[server_id][region].sup_queue[user]
-        await ctx.respond(user + ' has left the Support queue')    
+        del Queues[server_id][region].sup_queue[player.disc_name]
     elif role == 'Mid':
-        del Queues[server_id][region].mid_queue[user] 
-        await ctx.respond(user + ' has left the Mid queue')
+        del Queues[server_id][region].mid_queue[player.disc_name] 
     elif role == 'Top':
-        del Queues[server_id][region].top_queue[user]
-        await ctx.respond(user + ' has left the Top queue')      
+        del Queues[server_id][region].top_queue[player.disc_name]
+    msg=updatequeuemsg(user_id,role,'left')
+    await ctx.respond(embed=msg)
 
 #/showqueues
 @bot.slash_command()
@@ -115,7 +112,7 @@ async def showprofile(ctx,user_id=None):
     msg=profilemsg(player.disc_name, player.ign, player.rank, player.opgg)
     await ctx.respond(embed=msg)
 #Pop queue    
-@tasks.loop(seconds=0) #make 2min in final deploy
+@tasks.loop(seconds=30) 
 async def pop_queue(): 
     regions =['NA', 'EUW']
     c.execute(f'''SELECT server_id, channel_id FROM servers''')

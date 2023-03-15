@@ -86,7 +86,7 @@ class Match:
                 del queue[second_player.disc_name]
                 return Match.side_selection(first_player,second_player)
             elif delta_mmr(first_player.rank,second_player.rank) > mmr_band:
-                time.sleep(0)                                
+                time.sleep(60)                                
 
 def choose_solo(queue): #This might need to be an async function.
     players = Match.choose_players(queue=queue)

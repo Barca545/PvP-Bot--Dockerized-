@@ -8,7 +8,7 @@ Embed()
 #set up
 def setupmsg(ign):
     msg = discord.Embed(color=0xc27c0e)
-    msg.add_field(name='__**Set up Complete**__',value='You are set up ' + ign +'. See you on the Fields of Justice!')
+    msg.add_field(name='__**Set up Complete**__',value=f'You are set up {ign}. See you on the Fields of Justice!')
     return msg
 
 #show profile
@@ -19,25 +19,29 @@ def profilemsg(disc_name, ign, rank, opgg):
     msg.add_field(name='__Rank__',value=rank,inline=False)
     msg.add_field(name='__OP.GG__',value=opgg,inline=False)
     return msg
-    
+# Join queue
+def updatequeuemsg(user_id,role,action):
+    msg = discord.Embed(color=0xc27c0e)
+    msg.add_field(name=f'**{role} queue update**',value=f'<@{user_id}> has {action} the queue',inline=True)
+    return msg
 #show queue
 def showqmsg(server,region,lane): 
     if lane == 'Bottom Lane':
         adcs = Queues[server][region].adc_queue.keys()
         supports = Queues[server][region].sup_queue.keys()
         msg = discord.Embed(title='__**Bottom Lane Queue**__',color=0xc27c0e)
-        msg.add_field(name='**Adcs**', value=str(len(adcs))+' players in the ADC queue: ' + ', '.join(adcs),inline=False)
-        msg.add_field(name='**Supports**', value=str(len(supports))+' players in the support queue: ' + ', '.join(supports),inline=False)
+        msg.add_field(name='**Adcs**', value=f'{str(len(adcs))} players in the ADC queue: ' + ', '.join(adcs),inline=False)
+        msg.add_field(name='**Supports**', value=f'{str(len(supports))} players in the support queue: '+', '.join(supports),inline=False)
         return msg
     elif lane == 'Middle Lane':
         mids = Queues[server][region].mid_queue.keys()
         msg = discord.Embed(title='__**Middle Lane Queue**__',color=0xc27c0e)
-        msg.add_field(name='**Middle Laners**', value=str(len(mids))+' players in the middle lane queue: ' + ', '.join(mids))
+        msg.add_field(name='**Middle Laners**', value=f'{str(len(mids))} players in the middle lane queue: ' + ', '.join(mids))
         return msg
     elif lane == 'Top Lane':
         tops = Queues[server][region].top_queue.keys()
         msg = discord.Embed(title='__**Top Lane Queue**__',color=0xc27c0e)
-        msg.add_field(name='**Top laners**', value=str(len(tops))+' players in the Top lane queue: ' + ', '.join(tops))
+        msg.add_field(name='**Top laners**', value=f'{str(len(tops))} players in the Top lane queue: ' + ', '.join(tops))
         return msg
     else:
         tops = Queues[server][region].top_queue.keys()
@@ -52,12 +56,12 @@ def showqmsg(server,region,lane):
         return msg
 
 #pop queue     
-async def popmsg(match:Match,channel_id:int,lane:str,DM=True,):     
+async def popmsg(match:Match,channel_id:int,lane:str):     
     users = list(filter(None,[match.blue_player_1,match.red_player_1,match.blue_support,match.red_support]))
     for j in users: 
         user_id = bot.get_user(int(j.disc_id))
     def msg(lane:str):
-        message = discord.Embed(title = 'Lobby Name: ' + match.creator + "'s Lobby",color=0xc27c0e)
+        message = discord.Embed(title = '__**NEW MATCH**__',color=0xc27c0e)
         message.add_field(name='Lobby Creator:', value= match.creator,inline=False)
         message.add_field(name='Lobby Type:', value=lane,inline=False)
         message.add_field(name='Password: ', value=match.pwd,inline=False)
@@ -79,5 +83,8 @@ async def popmsg(match:Match,channel_id:int,lane:str,DM=True,):
             message.add_field(name='Elo Difference:', value=str(match.diff),inline=False)      
         return message
     message = msg(lane=lane)
-    if DM:    
-        await user_id.send(embed=message)     
+    channel=bot.get_channel(channel_id)
+    recipients = [channel,user_id]
+    for recipient in recipients:   
+        await recipient.send(embed=message)
+            

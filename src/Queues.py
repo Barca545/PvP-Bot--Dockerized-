@@ -1,5 +1,4 @@
 from initiate import *
-import random
 
 class Player:
     def __init__ (self, disc_id, ign, rank, opgg, role):

@@ -3,7 +3,7 @@ from initiate import *
 class Player:
     def __init__ (self, disc_id, ign, rank, opgg, role):
         self.disc_id = disc_id
-        self.disc_name = f'<@{str(disc_id)}>'
+        self.disc_name = f'<@{str(disc_id)}>' 
         self.ign = ign
         self.rank = rank 
         self.opgg = opgg
@@ -32,15 +32,12 @@ class Queue:
             Queues[server_id] = {}
             for region in regions:
                 Queues[server_id][region] = Queue()
-        print(Queues)
         return Queues
     def add_server(server_id):
         regions = ['NA', 'EUW']
         Queues[server_id] = {}
         for region in regions:
             Queues[server_id][region] = Queue()
-            print(Queues)
-            return Queues
-        
+            return Queues        
 Queues = Queue.build()
 

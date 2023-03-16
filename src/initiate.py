@@ -7,7 +7,7 @@ from discord.commands import Option
 import json
 import os
 import sqlite3
-import pandas as pd
+
 
 
 load_dotenv(find_dotenv())

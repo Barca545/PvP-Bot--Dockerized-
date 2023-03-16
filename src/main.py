@@ -32,13 +32,12 @@ rank_as_mmr = {
     }
 roles = ['ADC','Support','Top', 'Mid']
 
-
 #Discord connect
 @bot.event
 async def on_ready():
     print('We have logged in as {0.user}'.format(bot))
     pop_queue.start()
-    
+
 #set channel
 @bot.slash_command()
 async def set_channel(ctx):
@@ -46,7 +45,7 @@ async def set_channel(ctx):
     channel= int(ctx.channel_id)
     c.execute(f'''INSERT INTO servers (server_id, channel_id) VALUES ({server_id}, {channel})''')
     conn.commit()
-    Queue.add_server(server_id)#I don't think this works
+    Queue.add_server(server_id)
     await ctx.respond('Bot channel is now ' + f'<#{channel}>')
 
 #/setup
@@ -64,34 +63,46 @@ async def setup(ctx, ign:str, rank: Option(choices=rank_as_mmr), opgg_link):
     await ctx.respond(embed=msg)
 
 @bot.slash_command()
+async def updateprofile(ctx, ign:str, rank: Option(choices=rank_as_mmr), opgg_link):
+    user_id = int(ctx.author.id)
+    mmr = rank_as_mmr[rank]
+    c.execute(f'''
+    UPDATE users 
+    SET ign='{ign}', rank='{mmr}', opgg='{opgg_link}'
+    WHERE disc_id='{user_id}'
+    ''') 
+    conn.commit()
+    msg=updateupmsg(ign=ign)
+    await ctx.respond(embed=msg)
+
+@bot.slash_command()
 async def joinqueue(ctx, region: Option(choices=['NA', 'EUW']), role: Option(choices=roles)):
     server_id = int(ctx.guild_id)
     user_id = int(ctx.author.id)
     player = Player.build(user_id,role)
     msg=updatequeuemsg(user_id,role,'joined')
     if role == 'ADC':    
-        Queues[server_id][region].adc_queue[player.disc_name] = player
+        Queues[server_id][region].adc_queue[player.disc_id] = player
     elif role == 'Support':
-        Queues[server_id][region].sup_queue[player.disc_name] = player
+        Queues[server_id][region].sup_queue[player.disc_id] = player
     elif role == 'Mid':
-        Queues[server_id][region].mid_queue[player.disc_name] = player
+        Queues[server_id][region].mid_queue[player.disc_id] = player
     elif role == 'Top':
-        Queues[server_id][region].top_queue[player.disc_name] = player
+        Queues[server_id][region].top_queue[player.disc_id] = player
     await ctx.respond(embed=msg)
+
 @bot.slash_command()
 async def leavequeue(ctx, region: Option(choices=['NA', 'EUW']),role: Option(choices=roles)):
     user_id = int(ctx.author.id)
-    player = Player.build(user_id,role)
     server_id = int(ctx.guild_id)
     if role == 'ADC':  
-        
-        del Queues[server_id][region].adc_queue[player.disc_name]
+        del Queues[server_id][region].adc_queue[user_id]
     elif role == 'Support':
-        del Queues[server_id][region].sup_queue[player.disc_name]
+        del Queues[server_id][region].sup_queue[user_id]
     elif role == 'Mid':
-        del Queues[server_id][region].mid_queue[player.disc_name] 
+        del Queues[server_id][region].mid_queue[user_id] 
     elif role == 'Top':
-        del Queues[server_id][region].top_queue[player.disc_name]
+        del Queues[server_id][region].top_queue[user_id]
     msg=updatequeuemsg(user_id,role,'left')
     await ctx.respond(embed=msg)
 
@@ -102,6 +113,18 @@ async def showqueue(ctx,region:Option(choices=['NA', 'EUW']),lane:Option(choices
     message = showqmsg(server_id,region,lane)         
     await ctx.respond(embed=message)
 
+#/match
+@bot.slash_command()
+async def match(ctx,match_id,winner:Option(choices=['Blue', 'Red'])):
+    c.execute(f'''
+    UPDATE matches 
+    SET winner='{winner}'
+    WHERE match_number='{match_id}'
+    ''') 
+    conn.commit()
+    await ctx.respond('match updated')
+
+#/show profile
 @bot.slash_command() 
 async def showprofile(ctx,user_id=None):
     if user_id==None:
@@ -111,8 +134,9 @@ async def showprofile(ctx,user_id=None):
     player = Player.build(user)
     msg=profilemsg(player.disc_name, player.ign, player.rank, player.opgg)
     await ctx.respond(embed=msg)
+
 #Pop queue    
-@tasks.loop(seconds=30) 
+@tasks.loop(seconds=0) 
 async def pop_queue(): 
     regions =['NA', 'EUW']
     c.execute(f'''SELECT server_id, channel_id FROM servers''')
@@ -126,12 +150,12 @@ async def pop_queue():
             adc_queue=Queues[server_id][region].adc_queue
             sup_queue=Queues[server_id][region].sup_queue
             if len(top_queue)>=2: 
-                top_match = choose_solo(top_queue)
+                top_match = Match.build_solo(top_queue)
                 await popmsg(top_match,channel_id=channel_id,lane='Top Lane')
             if len(mid_queue)>=2:
-                mid_match = choose_solo(mid_queue)
+                mid_match = Match.build_solo(mid_queue)
                 await popmsg(mid_match,channel_id=channel_id,lane='Middle Lane')
             if len(adc_queue) >= 2 and len(sup_queue) >= 2:
-                bot_match = choose_duo(adc_queue=adc_queue,sup_queue=sup_queue)
+                bot_match = Match.build_duo(adc_queue=adc_queue,sup_queue=sup_queue)
                 await popmsg(bot_match,channel_id=channel_id,lane='Bottom Lane')
 bot.run(token)                                                                                                                                           

@@ -20,7 +20,7 @@ def heads_or_tails():
     return random.choice(coin)
 
 class Match:           
-    def __init__ (self,primary_players_dict, secondary_players_dict=None): #I don't think these args work
+    def __init__ (self,primary_players_dict, secondary_players_dict=None,matchid=None): #I don't think these args work
         self = self
         self.primary_players_dict = primary_players_dict
         self.secondary_players_dict = secondary_players_dict
@@ -31,6 +31,7 @@ class Match:
         self.blue_support = Match.check_support(self,'Blue')
         self.red_support = Match.check_support(self,'Red')
         self.diff = Match.find_diff(self)
+        self.matchid = matchid
     def check_support(self,side:str):
         if self.secondary_players_dict != None:
             return self.secondary_players_dict[side]
@@ -82,18 +83,37 @@ class Match:
             second_player = Match.choose_2nd(first_player,queue)
             mmr_band = i
             if delta_mmr(first_player.rank,second_player.rank) <= mmr_band or mmr_band == 2000:
-                del queue[first_player.disc_name]
-                del queue[second_player.disc_name]
+                del queue[first_player.disc_id]
+                del queue[second_player.disc_id]
                 return Match.side_selection(first_player,second_player)
             elif delta_mmr(first_player.rank,second_player.rank) > mmr_band:
-                time.sleep(60)                                
-
-def choose_solo(queue): #This might need to be an async function.
-    players = Match.choose_players(queue=queue)
-    solo_match = Match(players)
-    return solo_match
-def choose_duo(adc_queue,sup_queue): #This might need to be an async function.
-    ADC_players = Match.choose_players(queue=adc_queue)
-    Sup_players = Match.choose_players(queue=sup_queue)
-    Bot_match = Match(ADC_players,Sup_players)
-    return Bot_match
+                time.sleep(0)                                
+    def build_solo(queue): 
+        players = Match.choose_players(queue=queue)
+        solo_match = Match(players)
+        print(solo_match.blue_player_1.disc_id)
+        print(solo_match.red_player_1.disc_id)
+        c.execute(f'''
+        INSERT INTO matches (player_1, player_2)
+        VALUES 
+        ({solo_match.blue_player_1.disc_id}, {solo_match.red_player_1.disc_id})
+        ''')
+        conn.commit()
+        c.execute(f'''SELECT max(match_number) FROM matches''')
+        matchid = c.fetchone()[0]
+        solo_match.matchid = matchid
+        return solo_match
+    def build_duo(adc_queue,sup_queue): 
+        ADC_players = Match.choose_players(queue=adc_queue)
+        Sup_players = Match.choose_players(queue=sup_queue)
+        Bot_match = Match(ADC_players,Sup_players)
+        c.execute(f'''
+        INSERT INTO matches (player_1, player_2, player_3, player_4)
+        VALUES 
+        ({Bot_match.blue_player_1}, {Bot_match.red_player_1},{Bot_match.blue_support},{Bot_match.red_support})
+        ''')
+        conn.commit()
+        c.execute(f'''SELECT max(match_number) FROM matches''')
+        matchid = c.fetchone()[0]
+        Bot_match.matchid = matchid
+        return Bot_match

@@ -1,5 +1,3 @@
-import gspread
-import dotenv
 from dotenv import load_dotenv,find_dotenv 
 import discord
 from discord.ext import commands, tasks
@@ -20,5 +18,6 @@ intents = discord.Intents.all()
 bot = commands.Bot(command_prefix='/', intents=intents) 
 
 #SQL Server Connect
-conn = sqlite3.connect('pvpserver') 
+db_path = os.environ.get("DB")
+conn = sqlite3.connect(db_path) 
 c = conn.cursor()

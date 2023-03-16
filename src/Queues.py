@@ -13,8 +13,6 @@ class Player:
         player = c.fetchone()
         return Player(player[0], player[1], player[2], player[3], role)
 
-#test = Player.build(221397446066962435)
-
 #Queues: 
 class Queue:
     def __init__(self):

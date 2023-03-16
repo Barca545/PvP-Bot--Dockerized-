@@ -17,10 +17,10 @@ RUN pip install -r requirements.txt
 COPY src/ .
 
 #Install the path ENVs for credentials 
-ENV PVP_TOKEN="/working/pvpbot_secrets/Discord_token.json"
+ENV PVP_TOKEN="/pvpbot_secrets/Discord_token.json"
 
-#Connect to db
-VOLUME [ "/data"]
+#Install the path ENVs for the database
+ENV DB = "/data/pvpserver"
 
 #Command to run on container start
 CMD [ "python", "main.py", "--host=0.0.0.0"]

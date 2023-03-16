@@ -5,10 +5,16 @@ from Queues import *
 from initiate import *
 
 Embed()
-#set up
+#set up profile
 def setupmsg(ign):
     msg = discord.Embed(color=0xc27c0e)
     msg.add_field(name='__**Set up Complete**__',value=f'You are set up {ign}. See you on the Fields of Justice!')
+    return msg
+
+#Update profile
+def updateupmsg(ign):
+    msg = discord.Embed(color=0xc27c0e)
+    msg.add_field(name='__**Update Complete**__',value=f'Your profile has been updated {ign}. See you on the Fields of Justice!')
     return msg
 
 #show profile
@@ -24,6 +30,7 @@ def updatequeuemsg(user_id,role,action):
     msg = discord.Embed(color=0xc27c0e)
     msg.add_field(name=f'**{role} queue update**',value=f'<@{user_id}> has {action} the queue',inline=True)
     return msg
+
 #show queue
 def showqmsg(server,region,lane): 
     if lane == 'Bottom Lane':
@@ -62,29 +69,36 @@ async def popmsg(match:Match,channel_id:int,lane:str):
         user_id = bot.get_user(int(j.disc_id))
     def msg(lane:str):
         message = discord.Embed(title = '__**NEW MATCH**__',color=0xc27c0e)
-        message.add_field(name='Lobby Creator:', value= match.creator,inline=False)
-        message.add_field(name='Lobby Type:', value=lane,inline=False)
-        message.add_field(name='Password: ', value=match.pwd,inline=False)
+        message.add_field(name='__Match ID__', value=f'{match.matchid}',inline=False)
+        message.add_field(name='__Lobby Creator__', value= match.creator,inline=False)
+        message.add_field(name='__Lobby Type__', value=lane,inline=False)
+        message.add_field(name='__Lobby Name__', value=f'PVP{match.matchid}',inline=False)
+        message.add_field(name='__Password__', value=match.pwd,inline=False)
         if match.secondary_players_dict is None:
-            message.add_field(name='Blue side '+match.blue_player_1.role + ':', value=match.blue_player_1.disc_name,inline=True)
-            message.add_field(name='Red side '+match.red_player_1.role + ':', value=match.red_player_1.disc_name,inline=True)
-            message.add_field(name='Elo Difference:', value=str(match.diff),inline=False)
+            message.add_field(name=f'__Blue side {match.blue_player_1.role}__', value=f'[{match.blue_player_1.ign}]({match.blue_player_1.opgg})',inline=True)
+            message.add_field(name=f'__Red side {match.red_player_1.role}__', value=f'[{match.red_player_1.ign}]({match.red_player_1.opgg})',inline=True)
+            message.add_field(name='__Elo Difference__', value=str(match.diff),inline=False)
         elif match.secondary_players_dict is not None:
-            message.add_field(name='Blue side',
+            message.add_field(name='__Blue side__',
             value=
-            'Blue '+match.blue_player_1.role + ': '+match.blue_player_1.disc_name
-            + '\n'
-            'Blue '+match.blue_support.role + ': '+match.blue_support.disc_name,inline=False)
-            message.add_field(name='Red side',
+            f'Blue {match.blue_player_1.role}: [{match.blue_player_1.ign}]({match.blue_player_1.opgg})'
+            +'\n'+
+            f'Blue {match.blue_support.role}: [{match.blue_support.ign}]({match.blue_support.opgg})',inline=True)
+            message.add_field(name='__Red side__',
             value=
-            'Red '+match.red_player_1.role + ': '+match.red_player_1.disc_name
-            + '\n'
-            'Red '+match.red_support.role + ': '+match.red_support.disc_name,inline=False)
-            message.add_field(name='Elo Difference:', value=str(match.diff),inline=False)      
+            f'Blue {match.blue_player_1.role}: [{match.red_player_1.ign}]({match.red_player_1.opgg})'
+            +'\n'+
+            f'Blue {match.red_support.role}: [{match.red_support.ign}]({match.red_support.opgg})',inline=True)
+            message.add_field(name='__Elo Difference__', value=str(match.diff),inline=False)      
         return message
     message = msg(lane=lane)
     channel=bot.get_channel(channel_id)
     recipients = [channel,user_id]
     for recipient in recipients:   
         await recipient.send(embed=message)
+
+#record match
+def matchmessage(match_id,winner):
+    msg = discord.Embed(title=f'Match {match_id} recorded',color=0xc27c0e)
+    msg.add_field(name=f'Winner {winner} side,',value='Congratulations!')
             

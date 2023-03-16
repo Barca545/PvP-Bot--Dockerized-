@@ -16,11 +16,9 @@ RUN pip install -r requirements.txt
 #Copy the content of the local src directory to the working directory
 COPY src/ .
 
-#Install the path ENVs for credentials 
+#Install the path ENVs for credentials and database
 ENV PVP_TOKEN="/pvpbot_secrets/Discord_token.json"
-
-#Install the path ENVs for the database
-ENV DB = "/data/pvpserver"
+ENV DB = "/data/pvpserver.db"
 
 #Command to run on container start
 CMD [ "python", "main.py", "--host=0.0.0.0"]

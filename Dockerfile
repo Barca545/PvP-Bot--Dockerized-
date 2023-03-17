@@ -13,12 +13,12 @@ RUN pip install --upgrade pip
 RUN pip install python-dotenv
 RUN pip install -r requirements.txt
 
-#Copy the content of the local src directory to the working directory
-COPY src/ .
+ COPY src/ .
 
 #Install the path ENVs for credentials and database
-ENV PVP_TOKEN="/pvpbot_secrets/Discord_token.json"
-ENV DB = "/data/pvpserver.db"
+ENV SECRETS="/secrets/secrets.json" 
+ENV DB="/data/pvpserver.ini"
+
 
 #Command to run on container start
-CMD [ "python", "main.py", "--host=0.0.0.0"]
+CMD [ "python", "main.py", "--host=0.0.0.0"]   

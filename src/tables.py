@@ -4,20 +4,20 @@ from config import config
 def create_tables():
     commands = ('''
     CREATE TABLE IF NOT EXISTS users
-        (disc_id INTEGER PRIMARY KEY UNIQUE, 
+        (disc_id TEXT PRIMARY KEY UNIQUE, 
         ign TEXT NOT NULL UNIQUE, 
         rank INTEGER NOT NULL, 
         opgg TEXT NOT NULL UNIQUE)''',
 
     '''CREATE TABLE IF NOT EXISTS servers
-    (server_id INTEGER PRIMARY KEY, channel_id INTEGER)''',                                                                                                                                                                                                                                     
+    (server_id TEXT PRIMARY KEY, channel_id TEXT)''',                                                                                                                                                                                                                                     
 
     '''CREATE TABLE IF NOT EXISTS matches
     (match_number SERIAL PRIMARY KEY, 
-    player_1 INTEGER, 
-    player_2 INTEGER, 
-    player_3 INTEGER, 
-    player_4 INTEGER, 
+    player_1 TEXT, 
+    player_2 TEXT, 
+    player_3 TEXT, 
+    player_4 TEXT, 
     winner TEXT)                                                                                                                                                                                                                                  
     ''') 
     conn = None

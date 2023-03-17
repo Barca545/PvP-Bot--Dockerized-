@@ -12,7 +12,7 @@ def delta_mmr(laner_1:int, laner_2:int):
     
 def password():
         pwd = ''
-        for i in range(13):
+        for i in range(9):
             pwd += secrets.choice(string.ascii_letters + string.digits)
         return pwd
 
@@ -25,9 +25,9 @@ class Match:
         self = self
         self.primary_players_dict = primary_players_dict
         self.secondary_players_dict = secondary_players_dict
-        self.blue_player_1 = primary_players_dict['Blue']
-        self.red_player_1 = primary_players_dict['Red']
-        self.creator = random.choice([self.blue_player_1,self.red_player_1]).disc_name
+        self.blue_player = primary_players_dict['Blue']
+        self.red_player = primary_players_dict['Red']
+        self.creator = random.choice([self.blue_player,self.red_player]).disc_name
         self.pwd = password()
         self.blue_support = Match.check_support(self,'Blue')
         self.red_support = Match.check_support(self,'Red')
@@ -92,15 +92,13 @@ class Match:
     def build_solo(queue): 
         players = Match.choose_players(queue=queue)
         solo_match = Match(players)
-        print(solo_match.blue_player_1.disc_id)
-        print(solo_match.red_player_1.disc_id)
-        matchid = matchupdate(solo_match)
+        matchid = matchupdate(solo_match.blue_player.disc_id,solo_match.red_player.disc_id)
         solo_match.matchid = matchid
         return solo_match
     def build_duo(adc_queue,sup_queue): 
         ADC_players = Match.choose_players(queue=adc_queue)
         Sup_players = Match.choose_players(queue=sup_queue)
         Bot_match = Match(ADC_players,Sup_players)
-        matchid = matchupdate(Bot_match)
+        matchid = matchupdate(Bot_match.blue_player,Bot_match.red_player,Bot_match.blue_support,Bot_match.red_support)
         Bot_match.matchid = matchid
         return Bot_match

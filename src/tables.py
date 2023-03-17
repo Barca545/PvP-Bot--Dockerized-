@@ -18,7 +18,7 @@ def create_tables():
     player_2 BIGINT, 
     player_3 BIGINT, 
     player_4 BIGINT, 
-    winner BIGINT)                                                                                                                                                                                                                                  
+    winner TEXT)                                                                                                                                                                                                                                  
     ''') 
 
     conn = None

@@ -44,8 +44,8 @@ async def on_ready():
 async def set_channel(ctx):
     server_id = int(ctx.guild_id)
     channel_id= int(ctx.channel_id)
-    sqlsetchannel(server_id,channel_id)
-    Queue.add_server(server_id)
+    sqlsetchannel(str(server_id),str(channel_id))
+    Queue.add_server(server_id  )
     await ctx.respond('Bot channel is now ' + f'<#{channel_id}>')
 
 #/setup
@@ -66,7 +66,7 @@ async def updateprofile(ctx, ign:str, rank: Option(choices=rank_as_mmr), opgg_li
     await ctx.respond(embed=msg)
 
 @bot.slash_command()
-async def joinqueue(ctx, region: Option(choices=['NA', 'EUW']), role: Option(choices=roles)):
+async def joinqueue(ctx, region: Option(choices=regions), role: Option(choices=roles)):
     server_id = int(ctx.guild_id)
     user_id = int(ctx.author.id)
     player = Player.build(user_id,role)
@@ -82,7 +82,7 @@ async def joinqueue(ctx, region: Option(choices=['NA', 'EUW']), role: Option(cho
     await ctx.respond(embed=msg)
 
 @bot.slash_command()
-async def leavequeue(ctx, region: Option(choices=['NA', 'EUW']),role: Option(choices=roles)):
+async def leavequeue(ctx, region: Option(choices=regions),role: Option(choices=roles)):
     user_id = int(ctx.author.id)
     server_id = int(ctx.guild_id)
     if role == 'ADC':  
@@ -98,7 +98,7 @@ async def leavequeue(ctx, region: Option(choices=['NA', 'EUW']),role: Option(cho
 
 #/showqueues
 @bot.slash_command()
-async def showqueue(ctx,region:Option(choices=['NA', 'EUW']),lane:Option(choices=['Top Lane', 'Middle Lane', 'Bottom Lane', 'All'])): 
+async def showqueue(ctx,region:Option(choices=regions),lane:Option(choices=['Top Lane', 'Middle Lane', 'Bottom Lane', 'All'])): 
     server_id = int(ctx.guild_id)
     message = showqmsg(server_id,region,lane)         
     await ctx.respond(embed=message)
@@ -113,9 +113,9 @@ async def match(ctx,match_id,winner:Option(choices=['Blue', 'Red'])):
 @bot.slash_command() 
 async def showprofile(ctx,user_id=None):
     if user_id==None:
-        user = ctx.author.id
+        user = int(ctx.author.id)
     else:
-        user=user_id
+        user=(user_id)
     player = Player.build(user)
     msg=profilemsg(player.disc_name, player.ign, player.rank, player.opgg)
     await ctx.respond(embed=msg)
@@ -123,7 +123,6 @@ async def showprofile(ctx,user_id=None):
 #Pop queue    
 @tasks.loop(seconds=0) 
 async def pop_queue(): 
-    regions =['NA', 'EUW']
     servers = sqlservers()
     for server in servers:
         server_id = server[0]

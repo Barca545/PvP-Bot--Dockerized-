@@ -1,7 +1,6 @@
 import discord
 from discord.ext import commands, tasks
 from discord.commands import Option 
-from connect import *
 from dotenv import load_dotenv,find_dotenv 
 import os
 import json

@@ -14,7 +14,7 @@ class Player:
         return Player(player[0], player[1], player[2], player[3], role)
 
 #Queues: 
-regions = ['NA', 'EUW']
+regions = ['NA', 'EUW','EUNE','OCE','KR']
 class Queue:
     def __init__(self):
         self.top_queue = {}
@@ -23,7 +23,6 @@ class Queue:
         self.sup_queue = {}
     def build():
         servers = sqlservers()
-        print(servers)
         Queues = {}
         for server in servers:
             server_id = server[0]
@@ -37,5 +36,3 @@ class Queue:
             Queues[server_id][region] = Queue()
             return Queues        
 Queues = Queue.build()
-
-

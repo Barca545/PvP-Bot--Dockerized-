@@ -33,38 +33,38 @@ def updatequeuemsg(user_id,role,action):
 
 #show queue
 def showqmsg(server,region,lane): 
-    if lane == 'Bottom Lane':
-        adcs = Queues[server][region].adc_queue.keys()
-        supports = Queues[server][region].sup_queue.keys()
+    tops = Queues[server][region].top_queue.keys()
+    topnames = [f'<@{player}>' for player in tops]
+    mids = Queues[server][region].mid_queue.keys()
+    midnames=[f'<@{player}>' for player in mids]
+    adcs = Queues[server][region].adc_queue.keys()
+    adcnames = [f'<@{player}>' for player in adcs]
+    supports = Queues[server][region].sup_queue.keys()
+    supportnames =[f'<@{player}>' for player in supports]
+    if lane == 'Bottom Lane':       
         msg = discord.Embed(title='__**Bottom Lane Queue**__',color=0xc27c0e)
-        msg.add_field(name='**Adcs**', value=f'{str(len(adcs))} players in the ADC queue: ' + ', '.join(adcs),inline=False)
-        msg.add_field(name='**Supports**', value=f'{str(len(supports))} players in the support queue: '+', '.join(supports),inline=False)
+        msg.add_field(name='**Adcs**', value=f'{str(len(adcs))} players in the ADC queue: ' + ', '.join(adcnames),inline=False)
+        msg.add_field(name='**Supports**', value=f'{str(len(supports))} players in the support queue: '+', '.join(supportnames),inline=False)
         return msg
     elif lane == 'Middle Lane':
-        mids = Queues[server][region].mid_queue.keys()
         msg = discord.Embed(title='__**Middle Lane Queue**__',color=0xc27c0e)
-        msg.add_field(name='**Middle Laners**', value=f'{str(len(mids))} players in the middle lane queue: ' + ', '.join(mids))
+        msg.add_field(name='**Middle Laners**', value=f'{str(len(mids))} players in the middle lane queue: ' + ', '.join(midnames))
         return msg
     elif lane == 'Top Lane':
-        tops = Queues[server][region].top_queue.keys()
         msg = discord.Embed(title='__**Top Lane Queue**__',color=0xc27c0e)
-        msg.add_field(name='**Top laners**', value=f'{str(len(tops))} players in the Top lane queue: ' + ', '.join(tops))
+        msg.add_field(name='**Top laners**', value=f'{str(len(tops))} players in the Top lane queue: ' + ', '.join(topnames))
         return msg
     else:
-        tops = Queues[server][region].top_queue.keys()
-        mids = Queues[server][region].mid_queue.keys()
-        adcs = Queues[server][region].adc_queue.keys()
-        supports = Queues[server][region].sup_queue.keys()
         msg = discord.Embed(title='__**All Queues**__',color=0xc27c0e)
-        msg.add_field(name='**Top laners**', value=str(len(tops))+' players in the top lane queue: ' + ', '.join(tops),inline=False)
-        msg.add_field(name='**Middle Laners**', value=str(len(mids))+' players in the middle lane queue: ' + ', '.join(mids),inline=False)
-        msg.add_field(name='**Adcs**', value=str(len(adcs))+' players in the ADC queue: ' + ', '.join(adcs))
-        msg.add_field(name='**Supports**', value=str(len(supports))+' players in the support queue: ' + ', '.join(supports),inline=False)
+        msg.add_field(name='**Top laners**', value=str(len(tops))+' players in the top lane queue: ' + ', '.join(topnames),inline=False)
+        msg.add_field(name='**Middle Laners**', value=str(len(mids))+' players in the middle lane queue: ' + ', '.join(midnames),inline=False)
+        msg.add_field(name='**Adcs**', value=str(len(adcs))+' players in the ADC queue: ' + ', '.join(adcnames))
+        msg.add_field(name='**Supports**', value=str(len(supports))+' players in the support queue: ' + ', '.join(supportnames),inline=False)
         return msg
 
 #pop queue     
 async def popmsg(match:Match,channel_id:int,lane:str):     
-    users = list(filter(None,[match.blue_player_1,match.red_player_1,match.blue_support,match.red_support]))
+    users = list(filter(None,[match.blue_player,match.red_player,match.blue_support,match.red_support]))
     for j in users: 
         user_id = bot.get_user(int(j.disc_id))
     def msg(lane:str):
@@ -75,18 +75,18 @@ async def popmsg(match:Match,channel_id:int,lane:str):
         message.add_field(name='__Lobby Name__', value=f'PVP{match.matchid}',inline=False)
         message.add_field(name='__Password__', value=match.pwd,inline=False)
         if match.secondary_players_dict is None:
-            message.add_field(name=f'__Blue side {match.blue_player_1.role}__', value=f'[{match.blue_player_1.ign}]({match.blue_player_1.opgg})',inline=True)
-            message.add_field(name=f'__Red side {match.red_player_1.role}__', value=f'[{match.red_player_1.ign}]({match.red_player_1.opgg})',inline=True)
+            message.add_field(name=f'__Blue side {match.blue_player.role}__', value=f'[{match.blue_player.ign}]({match.blue_player.opgg})',inline=True)
+            message.add_field(name=f'__Red side {match.red_player.role}__', value=f'[{match.red_player.ign}]({match.red_player.opgg})',inline=True)
             message.add_field(name='__Elo Difference__', value=str(match.diff),inline=False)
         elif match.secondary_players_dict is not None:
             message.add_field(name='__Blue side__',
             value=
-            f'Blue {match.blue_player_1.role}: [{match.blue_player_1.ign}]({match.blue_player_1.opgg})'
+            f'Blue {match.blue_player.role}: [{match.blue_player.ign}]({match.blue_player.opgg})'
             +'\n'+
             f'Blue {match.blue_support.role}: [{match.blue_support.ign}]({match.blue_support.opgg})',inline=True)
             message.add_field(name='__Red side__',
             value=
-            f'Blue {match.blue_player_1.role}: [{match.red_player_1.ign}]({match.red_player_1.opgg})'
+            f'Blue {match.blue_player.role}: [{match.red_player.ign}]({match.red_player.opgg})'
             +'\n'+
             f'Blue {match.red_support.role}: [{match.red_support.ign}]({match.red_support.opgg})',inline=True)
             message.add_field(name='__Elo Difference__', value=str(match.diff),inline=False)      

@@ -1,6 +1,6 @@
 import psycopg2
 from config import config
-from Matchmaking import Match
+
 
 def sqlmatch(winner,match_id):
     conn = None
@@ -38,7 +38,7 @@ def sqlservers():
             conn.close()
     return servers
 
-def sqlupdateprof(user_id,ign,mmr,opgg_link):
+def sqlupdateprof(user_id:str,ign,mmr,opgg_link):
     conn = None
     try:
         params = config()
@@ -76,7 +76,7 @@ def sqlsetup(user_id,ign,mmr,opgg_link):
         if conn is not None:
             conn.close()
 
-def sqlsetchannel(server_id,channel_id):
+def sqlsetchannel(server_id:str,channel_id:str):
     conn = None
     try:
         params = config()
@@ -91,7 +91,7 @@ def sqlsetchannel(server_id,channel_id):
         if conn is not None:
             conn.close()
 
-def matchupdate(Bot_match:Match):
+def matchupdate(p1,p2,p3=None,p4=None):
     conn = None
     try:
         params = config()
@@ -100,7 +100,7 @@ def matchupdate(Bot_match:Match):
         c.execute(f'''
         INSERT INTO matches (player_1, player_2, player_3, player_4)
         VALUES 
-        ({Bot_match.blue_player_1}, {Bot_match.red_player_1},{Bot_match.blue_support},{Bot_match.red_support})
+        ({p1}, {p2},{p3 or 'NULL'},{p4 or 'NULL'})
         ''')
         conn.commit()
         c.execute(f'''SELECT max(match_number) FROM matches''')
@@ -120,8 +120,6 @@ def sqlplayer(user_id):
         conn = psycopg2.connect(**params)
         c = conn.cursor()
         c.execute(f'''SELECT * FROM users WHERE disc_id = {user_id}''')
-        conn.commit()
-        c.execute(f'''SELECT max(match_number) FROM matches''')
         player = c.fetchone()
         c.close()
     except (Exception, psycopg2.DatabaseError) as error:

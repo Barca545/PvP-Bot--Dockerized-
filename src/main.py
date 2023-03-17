@@ -121,6 +121,7 @@ async def showprofile(ctx,user_id=None):
     await ctx.respond(embed=msg)
 
 #Pop queue    
+#need to make the loop more periodic
 @tasks.loop(seconds=0) 
 async def pop_queue(): 
     servers = sqlservers()

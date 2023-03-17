@@ -4,22 +4,23 @@ from config import config
 def create_tables():
     commands = ('''
     CREATE TABLE IF NOT EXISTS users
-        (disc_id TEXT PRIMARY KEY UNIQUE, 
+        (disc_id BIGINT PRIMARY KEY UNIQUE, 
         ign TEXT NOT NULL UNIQUE, 
         rank INTEGER NOT NULL, 
         opgg TEXT NOT NULL UNIQUE)''',
 
     '''CREATE TABLE IF NOT EXISTS servers
-    (server_id TEXT PRIMARY KEY, channel_id TEXT)''',                                                                                                                                                                                                                                     
+    (server_id BIGINT PRIMARY KEY, channel_id BIGINT)''',                                                                                                                                                                                                                                     
 
     '''CREATE TABLE IF NOT EXISTS matches
     (match_number SERIAL PRIMARY KEY, 
-    player_1 TEXT, 
-    player_2 TEXT, 
-    player_3 TEXT, 
-    player_4 TEXT, 
-    winner TEXT)                                                                                                                                                                                                                                  
+    player_1 BIGINT, 
+    player_2 BIGINT, 
+    player_3 BIGINT, 
+    player_4 BIGINT, 
+    winner BIGINT)                                                                                                                                                                                                                                  
     ''') 
+
     conn = None
     try:
         # read the connection parameters

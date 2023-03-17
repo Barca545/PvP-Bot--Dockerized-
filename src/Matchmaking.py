@@ -4,6 +4,7 @@ import secrets
 import string
 import time
 from Queues import *
+from sqlfunctions import matchupdate
 
 #Could these be inside another class as a method maybe include pwd too?
 def delta_mmr(laner_1:int, laner_2:int): 
@@ -93,27 +94,13 @@ class Match:
         solo_match = Match(players)
         print(solo_match.blue_player_1.disc_id)
         print(solo_match.red_player_1.disc_id)
-        c.execute(f'''
-        INSERT INTO matches (player_1, player_2)
-        VALUES 
-        ({solo_match.blue_player_1.disc_id}, {solo_match.red_player_1.disc_id})
-        ''')
-        conn.commit()
-        c.execute(f'''SELECT max(match_number) FROM matches''')
-        matchid = c.fetchone()[0]
+        matchid = matchupdate(solo_match)
         solo_match.matchid = matchid
         return solo_match
     def build_duo(adc_queue,sup_queue): 
         ADC_players = Match.choose_players(queue=adc_queue)
         Sup_players = Match.choose_players(queue=sup_queue)
         Bot_match = Match(ADC_players,Sup_players)
-        c.execute(f'''
-        INSERT INTO matches (player_1, player_2, player_3, player_4)
-        VALUES 
-        ({Bot_match.blue_player_1}, {Bot_match.red_player_1},{Bot_match.blue_support},{Bot_match.red_support})
-        ''')
-        conn.commit()
-        c.execute(f'''SELECT max(match_number) FROM matches''')
-        matchid = c.fetchone()[0]
+        matchid = matchupdate(Bot_match)
         Bot_match.matchid = matchid
         return Bot_match

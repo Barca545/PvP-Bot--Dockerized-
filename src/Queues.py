@@ -1,4 +1,5 @@
 from initiate import *
+from sqlfunctions import sqlplayer,sqlqueue
 
 class Player:
     def __init__ (self, disc_id, ign, rank, opgg, role):
@@ -9,8 +10,7 @@ class Player:
         self.opgg = opgg
         self.role = role
     def build(user_id,role=None):
-        c.execute(f'''SELECT * FROM users WHERE disc_id = {user_id}''')
-        player = c.fetchone()
+        player = sqlplayer(user_id)
         return Player(player[0], player[1], player[2], player[3], role)
 
 #Queues: 
@@ -21,8 +21,7 @@ class Queue:
         self.adc_queue = {}
         self.sup_queue = {}
     def build():
-        c.execute('SELECT server_id FROM servers')
-        servers = c.fetchall()
+        servers = sqlqueue
         Queues = {}
         regions = ['NA', 'EUW']
         for server in servers:

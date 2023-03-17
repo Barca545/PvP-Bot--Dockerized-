@@ -2,6 +2,7 @@ from initiate import *
 from Matchmaking import *
 from Messages import *
 from Queues import *
+from sqlfunctions import *
 
 rank_as_mmr = {
     'Iron 2' : 300,
@@ -42,23 +43,17 @@ async def on_ready():
 @bot.slash_command()
 async def set_channel(ctx):
     server_id = int(ctx.guild_id)
-    channel= int(ctx.channel_id)
-    c.execute(f'''INSERT INTO servers (server_id, channel_id) VALUES ({server_id}, {channel})''')
-    conn.commit()
+    channel_id= int(ctx.channel_id)
+    sqlsetchannel(server_id,channel_id)
     Queue.add_server(server_id)
-    await ctx.respond('Bot channel is now ' + f'<#{channel}>')
+    await ctx.respond('Bot channel is now ' + f'<#{channel_id}>')
 
 #/setup
 @bot.slash_command()
 async def setup(ctx, ign:str, rank: Option(choices=rank_as_mmr), opgg_link):             
     user_id = int(ctx.author.id)
     mmr = rank_as_mmr[rank]
-    c.execute(f'''
-    INSERT INTO users (disc_id, ign, rank, opgg)
-        VALUES 
-        ({user_id},'{ign}','{mmr}', '{opgg_link}')
-    ''')
-    conn.commit()
+    sqlsetup(user_id,ign,mmr,opgg_link)
     msg=setupmsg(ign=ign)
     await ctx.respond(embed=msg)
 
@@ -66,12 +61,7 @@ async def setup(ctx, ign:str, rank: Option(choices=rank_as_mmr), opgg_link):
 async def updateprofile(ctx, ign:str, rank: Option(choices=rank_as_mmr), opgg_link):
     user_id = int(ctx.author.id)
     mmr = rank_as_mmr[rank]
-    c.execute(f'''
-    UPDATE users 
-    SET ign='{ign}', rank='{mmr}', opgg='{opgg_link}'
-    WHERE disc_id='{user_id}'
-    ''') 
-    conn.commit()
+    sqlupdateprof(user_id,ign,mmr,opgg_link)
     msg=updateupmsg(ign=ign)
     await ctx.respond(embed=msg)
 
@@ -116,12 +106,7 @@ async def showqueue(ctx,region:Option(choices=['NA', 'EUW']),lane:Option(choices
 #/match
 @bot.slash_command()
 async def match(ctx,match_id,winner:Option(choices=['Blue', 'Red'])):
-    c.execute(f'''
-    UPDATE matches 
-    SET winner='{winner}'
-    WHERE match_number='{match_id}'
-    ''') 
-    conn.commit()
+    sqlmatch(winner,match_id)
     await ctx.respond('match updated')
 
 #/show profile
@@ -139,8 +124,7 @@ async def showprofile(ctx,user_id=None):
 @tasks.loop(seconds=0) 
 async def pop_queue(): 
     regions =['NA', 'EUW']
-    c.execute(f'''SELECT server_id, channel_id FROM servers''')
-    servers = c.fetchall()
+    servers = sqlservers()
     for server in servers:
         server_id = server[0]
         channel_id=server[1]
